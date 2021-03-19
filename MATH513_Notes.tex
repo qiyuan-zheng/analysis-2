@@ -1,0 +1,2012 @@
+\documentclass[letterpaper,12pt]{article}
+\setlength{\parindent}{0pt}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{fixmath}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tikzscale}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{pgfplots}
+\usepackage[parfill]{parskip}
+
+
+\usepackage[bottom,stable]{footmisc}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\l@section}
+  {\hfil}
+  {\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill}
+  {}{}
+\makeatother
+\interfootnotelinepenalty=10000
+
+\makeatletter
+\def\thm@space@setup{%
+  \thm@preskip=1em
+  \thm@postskip=\thm@preskip % or whatever, if you don't want them to be equal
+}
+\makeatother
+
+\pgfplotsset{compat=1.16}
+
+\let\latexchi\chi
+\makeatletter
+\renewcommand\chi{\@ifnextchar_\sub@chi\latexchi}
+\newcommand{\sub@chi}[2]{% #1 is _, #2 is the subscript
+  \@ifnextchar^{\subsup@chi{#2}}{\latexchi^{}_{#2}}%
+}
+\newcommand{\subsup@chi}[3]{% #1 is the subscript, #2 is ^, #3 is the superscript
+  \latexchi_{#1}^{#3}%
+}
+\makeatother
+
+
+\usepackage{hyperref}
+
+\usepackage[norsk,capitalise,nameinlink,english]{cleveref}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+
+
+\theoremstyle{plain}
+\newtheorem{game}{Game}
+\newtheorem{subgame}{Game}[game] 
+\renewcommand{\thesubgame}{\thegame\Alph{subgame}} 
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{proposition}[thm]{Proposition}
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{corollary}[thm]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{claim}{Claim}
+\newtheorem*{fact}{Fact}
+
+
+
+\crefname{thm}{Theorem}{Theorems}
+\Crefname{thm}{Theorem}{Theorems}
+
+\usepackage{tikz-cd} 
+
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\wt}{\widetilde}
+
+\renewcommand{\Re}{\mathrm{Re}}
+
+
+
+\let\oldOmega\Omega
+\renewcommand{\Omega}{\mathrm{\oldOmega}}
+
+\let\oldGamma\Gamma
+\renewcommand{\Gamma}{\mathrm{\oldGamma}}
+
+\let\oldDelta\Delta
+\renewcommand{\Delta}{\mathrm{\oldDelta}}
+
+
+
+\DeclareMathOperator{\interior}{Int}
+\DeclareMathOperator\Log{Log}
+\DeclareMathOperator{\Res}{Res}
+\DeclareMathOperator{\Ind}{Ind}
+
+
+
+\makeatletter
+\newsavebox\myboxA
+\newsavebox\myboxB
+\newlength\mylenA
+
+\newcommand*\xoverline[2][0.75]{%
+    \sbox{\myboxA}{$\m@th#2$}%
+    \setbox\myboxB\null% Phantom box
+    \ht\myboxB=\ht\myboxA%
+    \dp\myboxB=\dp\myboxA%
+    \wd\myboxB=#1\wd\myboxA% Scale phantom
+    \sbox\myboxB{$\m@th\overline{\copy\myboxB}$}%  Overlined phantom
+    \setlength\mylenA{\the\wd\myboxA}%   calc width diff
+    \addtolength\mylenA{-\the\wd\myboxB}%
+    \ifdim\wd\myboxB<\wd\myboxA%
+       \rlap{\hskip 0.5\mylenA\usebox\myboxB}{\usebox\myboxA}%
+    \else
+        \hskip -0.5\mylenA\rlap{\usebox\myboxA}{\hskip 0.5\mylenA\usebox\myboxB}%
+    \fi}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Qiyuan Zheng}
+\lhead{MATH513 Notes}
+\cfoot{\thepage}
+\usepackage{accents}
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+\begin{document}
+
+Notes by Qiyuan Zheng.\footnote{I always indicate when a sum or union is finite, i.e $\bigcup_{k=1}^n A_k$. Otherwise, stuff like $\bigcup_n A_n$ indicates countable infinite or the case that finite or infinite does not really matter. Sue me.}
+
+\part{Advanced Calculus}
+
+\section{Series and Power Series}
+\begin{definition}
+We say the series $\sum_{n=1}^\infty a_n$ where $a_n\in \mathbb{C}$ is convergent if $s_n = \sum_{k=1}^n a_k$ is convergent to some $L \in \mathbb{C}$.
+\end{definition}
+
+\begin{thm}[Comparison Test]
+Suppose $\sum_n x_n$ and $\sum_n y_n$ such that $|x_n|\leq y_n$ for $n\geq N$ for some $N$. If $\sum_n y_n$ is convergent, then so is $\sum_n x_n$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Use Cauchy's Criterion for series.
+\end{proof}
+
+\begin{corollary}
+If $\sum_n |x_n|$ is convergent, then so is $\sum_n x_n$.
+\end{corollary}
+
+\begin{thm}[Root Test]
+Let $\sum_n a_n$ be a series with $a_n\in \mathbb{C}$. Let $q = \limsup_n \sqrt[n]{|a_n|}$, then
+\begin{enumerate}
+  \item If $q>1$, then $\sum_n a_n$ is divergent.
+  \item If $q<1$, then $\sum_n a_n$ is converges (absolutely!).
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+For 2, let $r\in(q,1)$, then by definition of $\limsup$, there exists $N$ such that $\forall n\geq N$, $\sqrt[n]{|a_n|}<r \implies |a_n|<r^n$. But then $\sum_n r^n$ because $r<1$ and thus we get our result.
+
+For 1, use the zero test and show that $a_n$ is not convergent to zero. Because for infinitely many $n$ we have $|a_n|\geq t^n\geq 1$ where $t\in(1,q)$.
+\end{proof}
+
+\begin{definition}
+A \emph{power series} is a function $f(z) = \sum_{n=0}^\infty c_n(z-a)^n$ where each $c_n\in \mathbb{C}$ and $a$ is the center of the power series.
+\end{definition}
+
+\begin{thm}
+Let $R = \frac{1}{\limsup_n\sqrt[n]{|c_n|}}$. If $|z-a|<R$, then $\sum_{n=0}^\infty c_n(z-a)^n$ is convergent. If $|z-a|>R$, then $\sum_{n=0}^\infty c_n(z-a)^n$ diverges.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Consider
+\[\limsup_n \sqrt[n]{|c_n(z-a)^n|} = |z-a|(\limsup_n\sqrt[n]{|c_n|}) < R (\limsup_n\sqrt[n]{|c_n|}) = 1.\qedhere\]
+\end{proof}
+
+\begin{example}
+Three important functions:
+\[\exp(z) = e^z = \sum_{n=0}^\infty \frac{z^n}{n!}\qquad \sin(z) = \sum_{n=0}^\infty (-1)^n \frac{z^{2n+1}}{(2n+1)!}\qquad \cos(z) = \sum_{n=0}^\infty (-1)^n \frac{z^{2n}}{(2n)!}.\]
+Their radius of convergence are all $+\infty$. It can be shown by observing that
+\[\frac{1}{\limsup_n \sqrt[n]{1/n!}} = \lim_n \sqrt[n]{n!} = \infty.\]
+\end{example}
+
+\begin{remark}
+Power series do \emph{not} necessarily uniformly converge on the entire open ball. If this is true, then it would converge at every point \emph{on} the boundary. However, taking a series like $\sum_n \frac1n z^n$ does not converge on $z=1$.
+\end{remark}
+
+\begin{thm}[Weierstrauss M-Test]
+Let $X\subseteq \mathbb{C}$ and $f:X\to \mathbb{C}$ be such that $\exists \{M_n\}\subseteq \mathbb{R}$ and $N>0$ such that
+\begin{enumerate}
+	\item $\forall n\geq N$ we have $\|f_n\|\leq M_n$
+	\item $\sum_n M_n$ is convergent
+\end{enumerate}
+then $\sum_n f_n(x)$ converges absolutely for all $x\in X$ and uniformly over $X$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Proof uses Cauchy's Criterion for series of functions.
+\end{proof}
+
+\begin{thm}
+Let $\sum_{n=0}^\infty c_n(z-a)^n$ be a power series with $R>0$ radius of convergence. Then, for all $r\in(0,R)$, the series $\sum_{n=0}^\infty c_n(z-a)^n$ converges \emph{uniformly} over $B(a,r)$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Set $M_n = |c_nr^n|$ so $\sum_n M_n = \sum_n |c_n|r^n$, which converges because $r<R$.
+\end{proof}
+
+\section{Differentiation}
+
+\begin{definition}\label{defn:Diffble}
+Let $X\subseteq \mathbb{R}^n$ and $f:X\to \mathbb{R}^m$ and $c\in X$. We say that $f$ is \emph{differentiable} at $c$ if there exists some $A \in M_{m\times n}(\mathbb{R})$ such that
+\[\lim_{\substack{x\to c\\ x\in X\setminus\{c\}}} \frac{\|f(x)-f(c)-A(x-c)\|_m}{\|x-c\|_n} = 0.\]
+\end{definition}
+
+
+\begin{definition}
+Let $X\subseteq \mathbb{R}^n$ and $f:X\to \mathbb{R}^m$ and $c\in X$. Write
+\[f = \begin{pmatrix}
+f_1 \\
+\vdots \\
+f_m
+\end{pmatrix}\text{ such that }f(x_1,\ldots,x_n) = \begin{pmatrix}
+f_1(x_1,\ldots,x_n) \\
+\vdots \\
+f_m(x_1,\ldots,x_n)
+\end{pmatrix}.\]
+We denote partial derivatives by
+\[\frac{\partial f_i}{\partial x_j}(c) = \lim_{\substack{t\to 0\\ c+t\mathbf{e}_j\in X\setminus\{c\}}}\frac{f_i(c+t\mathbf{e}_j)-f_i(c)}{t}.\]
+\end{definition}
+
+We now focus on the case in which $m=1$, so $f$ no longer has ``coordinate functions''.
+
+\begin{thm}\label{thm:MainPartialThm}
+Let $X\subseteq \mathbb{R}^n$ be open and $c\in X$, and $f:X\to \mathbb{R}$, then
+\begin{enumerate}
+  \item If $f$ is differentiable at $c$, then it's continuous at $c$ and $\frac{\partial f}{\partial x_1},\cdots,\frac{\partial f}{\partial x_n}$ all exist at $c$ and
+  \[f'(c) = \left(\frac{\partial f}{\partial x_1}(c),\cdots,\frac{\partial f}{\partial x_n}(c)\right).\]
+  \item If $\frac{\partial f}{\partial x_1},\cdots,\frac{\partial f}{\partial x_n}$ exist and are continuous in $X$, then $f$ is differentiable at any $c\in X$.
+\end{enumerate}
+\end{thm}
+
+We can summarize the above results with the following diagram:
+
+\tikzstyle{block} = [draw, fill=white, rectangle, 
+    minimum height=3em, minimum width=6em]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+\begin{tikzpicture}[auto, node distance=2cm,>=latex']
+
+    \node [input, name=input] {};
+    \node [block] (box1) {$\frac{\partial f}{\partial x_1},\cdots,\frac{\partial f}{\partial x_n}$ continuous on $X$};
+    \node [block, right of=box1,
+            node distance=6cm] (box2) {$f$ is differentiable at $c$};
+    \node [block, right of=box2,
+            node distance=5cm] (box3) {$\frac{\partial f}{\partial x_1},\cdots,\frac{\partial f}{\partial x_n}$ exist at $c$};
+    \node [block, below of=box2,
+            node distance=2cm] (box4) {$f$ is continuous at $c$};
+
+    \draw [->] (box1) -- node[name=u] {} (box2);
+    \draw [->] (box2) -- node[name=u] {} (box3);
+    \draw [->] (box2) -- node[name=u] {} (box4);
+\end{tikzpicture}
+
+There are counter-examples to every opposite direction.
+
+\begin{example}[Counter-Example 1: Differentiable But Partials Not Continuous] \hfill
+
+Consider 
+\[f(x,y) = \begin{cases}
+(x^2+y^2)\sin \left(\frac{1}{\sqrt{x^2+y^2}}\right) & (x,y)\neq(0,0) \\
+0 & (x,y) = (0,0).
+\end{cases}\]
+We first show that $f$ is differentiable at $(0,0)$. Notice that
+\[\lim_{(x,y)\to (0,0)}\frac{|f(x,y)-0|}{\sqrt{x^2+y^2}} \leq \lim_{(x,y)\to (0,0)} \frac{x^2+y^2}{\sqrt{x^2+y^2}} = \lim_{(x,y)\to (0,0)} \sqrt{x^2+y^2} = 0.\]
+That is, the derivative is $A = f'(0,0) = (0,0)$ (where $A$ is from \Cref{defn:Diffble}). Now, $f$ is differentiable at $(0,0)$ and we get $\frac{\partial f}{\partial x}(0,0) = 0$ and $\frac{\partial f}{\partial y}(0,0) = 0$. On the other hand, for $x>0$, we have
+\[\frac{\partial f}{\partial x}(x,0) = -\cos(1/x)+2x\sin(1/x),\]
+which does not approach $0$ as $x\to 0$. Hence, our $f$ is differentiable at $(0,0)$ but its partials are not continuous at that point.
+\end{example}
+
+\begin{example}[Counter-Example 2: Partials Exist but Not Continuous or Differentiable] \hfill
+
+Consider
+\[f(x,y) = \begin{cases}
+\frac{xy}{x^2+y^2} & (x,y)\neq(0,0) \\
+0 & (x,y) = (0,0).
+\end{cases}\]
+Now, note that $f(x,0)=0=f(0,y)$ for all $x,y$. Hence $\frac{\partial f}{\partial x}(0,0) = 0$ and $\frac{\partial f}{\partial y}(0,0) = 0$. However, as $(x,y)\to (0,0)$ along $x=y$, we get a limit of $1/2$ and hence $f(x,y)$ is not continuous at $(0,0)$ and thus not differentiable.
+\end{example}
+
+\begin{example}[Counter-Example 3: Continuous and Partial Exist, But Not Differentiable] \hfill
+
+Consider the function $f(x,y) = (xy)^{1/3}$. This function is clearly continuous and $\frac{\partial f}{\partial x}(x,0) = 0$ and $\frac{\partial f}{\partial y}(0,y) = 0$ at all $x,y$. Hence, $f_x(0,0)=f_y(0,0) = 0$.\footnote{It is my understanding that $f_y(x,0)$ and $f_x(0,y)$ does not exist for $x,y\ne 0$, so the partial derivatives do not exist \emph{everywhere} in our domain.} However, this function is not differentiable at $(0,0)$. If it is, then $A=f'(0,0)=(0,0)$ so we should get
+\[\lim_{(x,y)\to(0,0)}\frac{|(xy)^{1/3}-0|}{\sqrt{x^2+y^2}} = 0.\]
+If we approach on the line $y=x^2$, we get
+\[\lim_{x\to 0}\frac{|(x^3)^{1/3}|}{\sqrt{x^2+x^4}} = \lim_{x\to0}\frac{|x|}{|x|\sqrt{1+x^2}} = 1.\]
+\end{example}
+
+\begin{corollary}
+Let $X\subseteq \mathbb{R}^n$ be open and $f:X\to \mathbb{R}^m$ such that
+\[f = \begin{pmatrix}
+f_1 \\
+\vdots \\
+f_m
+\end{pmatrix}.\]
+Then $f$ is differentiable at $c\in X$ if and only if $f_1,\ldots,f_m$ are differentiable at $c\in X$. Moreover, we have
+\[f'(c) = \begin{pmatrix}
+\frac{\partial f_1}{\partial x_1}(c) & \cdots & \frac{\partial f_1}{\partial x_n}(c) \\
+\vdots & \ddots & \vdots \\
+\frac{\partial f_m}{\partial x_1}(c) & \cdots & \frac{\partial f_m}{\partial x_n}(c)
+\end{pmatrix}.\]
+\end{corollary}
+\begin{definition} \label{defn:ComplexDiff}
+Let $\Omega\subseteq \mathbb{C}$ be open and $c\in \Omega$ and $f:\Omega\to \mathbb{C}$. We say that $f$ is $\C$-differentiable at $c\in \Omega$ if
+\[\lim_{\substack{z\to c \\ z\in\Omega\setminus\{c\}}} \frac{f(z)-f(c)}{z-c} = f'(c) \in \C.\]
+\end{definition}
+
+Now, $\mathbb{C}$ can be naturally identified with $\R^2$, so we can similarly define our function to be $f:\Omega\to \mathbb{R}^2$ where $\Omega\in \R^2$. Then, with our notion of differentiability in \Cref{defn:Diffble,defn:ComplexDiff}, we essentially have two different notions of differentiability. That is, we can write each complex function as $f(z) = u(x,y) + iv(x,y)$ where $z=x+iy$ or we can write
+\[\wt{f}(x,y) = \begin{pmatrix}
+u(x,y) \\
+v(x,y)
+\end{pmatrix}\] 
+for $\wt{f}:\R^2\to\R^2$. We formalize these relationships with the following theorem:
+
+\begin{thm}[Cauchy-Riemann Equations]
+Let $f:\Omega\to \C$ be a $\C$-differentiable function at $c\in \Omega$ for $c=x_0+iy_0$. Then $f$ is differentiable as a map $\wt{f}:\Omega\to \R^2$ where $\Omega\subseteq \R^2$ that make the natural identifications as $f$. Moreover, we have
+\[\text{Cauchy-Riemann Equations}:\begin{cases}
+\frac{\partial u}{\partial x}(x_0,y_0) = \frac{\partial v}{\partial y}(x_0,y_0) \\
+\frac{\partial u}{\partial y}(x_0,y_0) = -\frac{\partial v}{\partial x}(x_0,y_0)
+\end{cases}\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+For differentiability, let $f'(c)=x'+iy'$ and solve for $A$ in $f'(c)(z-c)=A(z-c)$, this should be the $A$ that goes in \Cref{defn:Diffble}.
+
+For Cauchy-Riemann Equations, notice
+\[\lim_{\substack{t\to 0,\ t\in \R \\ c+t\in \Omega\setminus\{c\}}} \frac{f(c+t)-f(c)}{t} = \lim_{\substack{t\to 0,\ t\in \R \\ c+it\in \Omega\setminus\{c\}}} \frac{f(c+it)-f(c)}{it}\]
+since they are simply perturbations in the purely real and imaginary parts. Now, the LHS can be written as
+\[\lim_{\substack{t\to 0,\ t\in \R \\ c+t\in \Omega\setminus\{c\}}} \frac{u(x_0+t,y_0)+iv(x_0+t,y_0) - u(x_0,y_0) - iv(x_0,y_0)}{t} = \frac{\partial u}{\partial x}(x_0,y_0) + i \frac{\partial v}{\partial x}(x_0,y_0)\]
+by the first and the third term plus the second and fourth term. Similarly, we have
+\[RHS = \frac{\partial v}{\partial y}(x_0,y_0) - i \frac{\partial u}{\partial y}(x_0,y_0).\qedhere\]
+\end{proof}
+
+\begin{example}
+Here's an example in which Cauchy-Riemann holds but $f$ is not differentiable. Consider
+\[
+f(z) = \begin{cases}
+\exp \left(-\frac{1}{z^4}\right) & z\ne 0 \\
+0 & z=0.
+\end{cases}
+\]
+To see that $f$ satisfies Cauchy-Riemann at $0$, observe that
+\[\lim_{\substack{t\to 0\\t\in \R}} \left|\frac{\exp(-1/t^4)}{t}\right| = \left|\lim_{\substack{t\to 0\\t\in \R}} \frac{1}{t\exp(1/t^4)}\right| \leq \lim_{\substack{t\to 0\\t\in \R}} \frac{1}{|t|(1/t^4)} = \lim_{\substack{t\to 0\\t\in \R}}|t|^3 = 0.\]
+Similarly, we have
+\[\lim_{\substack{t\to 0\\t\in \R}} \left|\frac{\exp(-1/(it)^4)}{it}\right| = 0\]
+and thus Cauchy-Riemann holds at $0$. We now show that $f$ is \emph{not continuous} at $0$ and hence not differentiable. Let $\omega$ be such that $\omega^4 = -1$ and consider $z=\frac1n\omega$. We then have $|z| = \frac1n$ and $-\frac{1}{z^4} = n^4$ and thus $f$ is unbounded for any ball around $0$.
+\end{example}
+
+Now, we want to consider differentiation of power series.
+
+\begin{thm}\label{thm:PSeriesDiff}
+Let $f(z) = \sum_{n=0}^\infty c_n(z-a)^n$ be a power series with $R>0$. Then $f:B(a,R)\to \mathbb{C}$ is complex differentiable and, for all $z_0\in B(a,R)$, we have
+\[f'(z_0) = \sum_{n=1}^\infty nc_n(z_0-a)^{n-1}.\]
+\end{thm}
+
+First note some corollaries to this:
+\[(e^z)'=e^z,\ (\sin z)'=\cos z,\ (\cos z)'=-\sin z.\]
+
+To prove this, we will use the following fact:
+
+\begin{fact}
+$f:\Omega\to \C$ is differentiable at $c\in \Omega$ if and only if $\exists \varphi:\Omega\to \C$ such that $\varphi$ is continuous at $c\in \Omega$ and $f(z)-f(c)=\varphi(z)(z-c)$. Moreover, $f'(c)=\varphi(c)$.
+\end{fact}
+
+\begin{proof}[Proof outline for \Cref{thm:PSeriesDiff}]
+We will focus on the case which the power series is centered at $0$. Fix some $z_0\in B(0,R)$ and take $\delta>0$ such that $B(z_0,\delta)\subsetneq B(0,R)$ (we only care about the $\delta$ ball around $z_0$ because differentiability is a \emph{local} property). Now, observe
+\[\frac{f(z)-f(z_0)}{z-z_0} = \sum_{n=1}^\infty c_n\frac{z^n-z_0^n}{z-z_0} = \sum_{n=1}^\infty c_n(z^{n-1}+z^{n-1}z_0 + \ldots + z_0^{n-1}).\]
+Now, there exists some $r>0$ such that $B(z_0,\delta)\subseteq B(0,r)$. Hence, $|z|,|z_0|<r$ and we have
+\[|c_n(z^{n-1}+z^{n-1}z_0 + \ldots + z_0^{n-1})|\leq nr^n\]
+for all $n$. But then $\sum_{n=1}^\infty nr^n$ is convergent because $r<R$ and $\limsup_n \sqrt[n]{n|c_n|} = \limsup_n \sqrt[n]{|c_n|}$ because $\lim_n \sqrt[n]{n}$. Thus, 
+\[\sum_{n=1}^\infty c_n(z^{n-1}+z^{n-1}z_0 + \ldots + z_0^{n-1})\]
+is uniformly convergent on $B(0,r)$ and thus its continuous, so we can set $\varphi(z_0)$ to be such a series. Replacing $z$ with $z_0$ gives us the term-by-term differentiation formula.
+\end{proof}
+
+\section[title]{Riemann Integration\footnote{Most of this is elementary stuff from real analysis, I did not include most of the proof outlines here.}}
+
+\begin{definition}
+Let $f:[a,b]\to \mathbb{R}$ be such that $f$ is bounded. We say that $P$ is a \emph{partition} of $[a,b]$ if $P=\{x_0,x_1,\ldots,x_n\}$ such that $a=x_0<x_1<\ldots<x_n=b$. If $P\subseteq P^*$, we say that $P^*$ is a \emph{refinement} of $P$. For $f$ and a partition $P$, we let
+\[U(f,P) = \sum_{i=1}^n M_i\Delta x_i\text{ where }M_i = \sup_{x\in[x_{i-1},x_i]}f(x)\text{ and }\Delta x_i = x_i-x_{i-1}\]
+\[L(f,P) = \sum_{i=1}^n m_i\Delta x_i\text{ where }m_i = \inf_{x\in[x_{i-1},x_i]}f(x)\text{ and }\Delta x_i = x_i-x_{i-1}\]
+to be the \emph{upper and lower Riemann sums with respect to} $P$, respectively. Lastly, we let
+\[U(f) = \inf_P U(f,P)\qquad L(f) = \sup_p L(f,P)\] 
+to be the \emph{upper and lower integrations}, respectively.
+\end{definition}
+
+\begin{lemma}
+Let $P_1,P_2$ be partitions, then $U(f,P_1)\geq L(f,P_2)$.
+\end{lemma}
+
+\begin{proof}[Proof outline]
+Take a common refinement to be $P_1\cup P_2$.
+\end{proof}
+
+\begin{definition}
+Let $f:[a,b]\to \mathbb{R}$ be bounded, then we say that $f$ is \emph{Riemann integrable} if $U(f)=L(f)$ and write $\int_a^b f\ \mathrm{d}x = U(f)=L(f)$.
+\end{definition}
+
+In fact, there is an equivalent characterization of Riemann integration that allows us to prove some more general results when we cover line integrals and complex analysis.
+
+\begin{definition}
+The \emph{mesh} of a partition $P$ is defined as $\|P\| = \max\{x_i-x_{i-1}:i=1,\ldots,n\}$.
+\end{definition}
+
+\begin{thm}
+Let $f:[a,b]\to \R$ be a bounded function. Then $f$ is Riemann integrable with $\int_a^b f\ \mathrm{d}x = I$ if and only if there exists $I\in \mathbb{R}$ such that, for all $\varepsilon>0$, there exists $\delta>0$ such that, for all $P$ where $\|P\|<\delta$ and for all $\xi_i\in[x_{i-1},x_i]$ for $i=1,\ldots,n$, we get
+\[\left|\sum_{i=1}^{n}f(\xi_i)\Delta x_i-I\right|<\varepsilon.\]
+\end{thm}
+
+\begin{thm}[Fundamental Theorem of Calculus I]
+Let $f:[a,b]\to \R$ be integrable and let $F(x) = \int_a^x f(t)\ \mathrm{d}t$. Then, $F(x)$ is continuous and, if $f$ is continuous at $c\in[a,b]$, then $F$ is differentiable at $c$ with $F'(c)=f(c)$.
+\end{thm}
+
+\begin{thm}[Fundamental Theorem of Calculus II]
+Let $f:[a,b]\to \R$ be integrable and let $F(x) = \int_a^x f(t)\ \mathrm{d}t$ be continuous (and differentiable on $(a,b)$) and $F'(x)=f(x)$ for all $x\in(a,b)$. Then, we have
+\[\int_a^b f(x)\ \mathrm{d}x = F(b)-F(a).\]
+\end{thm}
+
+\begin{example}
+The function $F:[-1,1]\to\R$ be such that
+\[
+F(x) = \begin{cases}
+x^2\cos(1/x^2)& x\neq 0 \\
+0 & x=0.
+\end{cases}
+\]
+You can verify that $F$ is differentiable on $[-1,1]$ but its derivative is unbounded around $0$.
+\end{example}
+
+\begin{thm}[Integration By Parts]
+Let $f,g$ be functions with continuous derivatives on $[a,b]$. Then we have
+\[\int_{a}^{b} f(x)g'(x) \ \mathrm{d}x = f(b)g(b)-f(a)g(a)-\int_{a}^{b} f'(x)g(x) \ \mathrm{d}x.\]
+We often use the shorthand
+\[
+\int f(x)g'(x) \ \mathrm{d}x = f(x)g(x) - \int f'(x)g(x) \ \mathrm{d}x.
+\]
+\end{thm}
+\begin{proof}[Proof outline]
+Use the fact that $(fg)' = f'g+fg'$ (i.e. the product rule for derivatives).
+\end{proof}
+
+The priority list for $g'$ candidates is as follows
+\[e^x\gg \sin x,\ \cos x\gg x^n\gg \log x \gg \arcsin x,\ \arccos x.\]
+
+\section{Improper Integration}
+\begin{definition}
+Let $f:[a,b)\to \R$ be a function that is Riemann integrable on all $[a,c]$ for $c\in(a,b)$. We say that the improper integral on $[a,b)$ is convergent if
+\[\lim_{c\to b}\int_a^c f(x)\ \mathrm{d}x \in\R,\]
+in which case we just let
+\[\int_{a}^{b} f(x) \ \mathrm{d}x = \lim_{c\to b}\int_{a}^{c} f(x) \ \mathrm{d}x.\]
+The same definition can be used in $(a,b]$ or $(a,b)$, with the understanding that the latter case is a \emph{two-sided} improper integral and we can take some point between $a,b$ and consider it as two one-sided improper integral.
+\end{definition}
+
+\begin{thm}[Cauchy's Criterion for Improper Integrals]
+The improper integral
+\[\int_a^b f(x)\ \mathrm{d}x\]
+converges if and only if, $\forall \varepsilon>0$, $\exists r\in(a,b)$ such that, for all $p<q$ where $p,q\in(r,b)$, we get
+\[\left|\int_{p}^{q} f(x) \ \mathrm{d}x\right|<\varepsilon.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+The forward direction is straightforward, just make an $\varepsilon/2$ argument. For the converse direction, get a sequence $t_n\uparrow b$ and define
+\[s_n = \int_a^{t_n} f(x)\ \mathrm{d}x.\]
+Observe that $s_n$ is a Cauchy sequence in the reals, so it converges. Then, let $S = \lim_n s_n$ and perform standard analysis to show that
+\[\lim_{c\to b}\int_a^c f(x) \ \mathrm{d}x = S.\qedhere\]
+\end{proof}
+
+\begin{thm}[Comparison Test]
+Let $f,g:[a,b)\to \mathbb{R}$ and both $f,g$ are integrable on $[a,c]$ for all $c\in(a,b)$. Suppose $\exists d\in(a,b)$ such that $|f(x)|\leq g(x)$ for $x\in(d,b)$. If $\int_a^b g(x)\ \mathrm{d}x$ is convergent, then $\int_a^b f(x)$ is convergent.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Use Cauchy's Criterion.
+\end{proof}
+
+\begin{corollary}
+If $\int_a^b |f(x)|\ \mathrm{d}x$ converges, so does $\int_a^b f(x)\ \mathrm{d}x$.
+\end{corollary}
+
+\begin{example}
+The converse to the above is not true. Let $f(x) = \sin(x)/x$. We can show the improper integration converges by integration by parts. To show that it does \emph{not} converge absolutely, try to bound it below through a harmonic-like series, which will show it diverges to infinity.
+\end{example}
+
+\begin{thm}[Dirichlet's Test]
+Consider the improper integral $\int_a^b f(x)g(x)\ \mathrm{d}x$. If
+\begin{enumerate}
+  \item $f$ is continuous on $[a,b)$
+  \item $\exists M>0$ such that, for all $c\in(a,b)$, we have $\left|\int_a^c f(x)\ \mathrm{d}x\right|\leq M$
+  \item $g$ has continuous derivative over $[a,b)$, $g'(x)\leq 0$ everywhere, and $\lim_{x\to b}g(x)=0$
+\end{enumerate}
+then the improper integral converges.
+\end{thm}
+\begin{proof}[Proof outline]
+Use integration by parts, then it mostly boils down to showing 
+\[\lim_{c\to b}\int_{a}^{c} g'(x)F(x) \ \mathrm{d}x \in \R\]
+where $F$ is defined as in Fundamental Theorem of Calculus. Use the bound on $F$ in the hypothesis and the fact that $g'<0$ to show that this improper integral converges absolutely (you have to apply FTC).
+\end{proof}
+
+\newpage
+\part{Measure Theory}
+
+\section{Sigma Algebras and Measurable Functions}
+
+\begin{fact}
+Some facts:
+\begin{enumerate}
+  \item A subset of a countable set is countable.
+  \item $\N\times\N$ is countable.
+  \item If $X$ is countable ad $g:X\to Y$ is surjective, then $Y$ is countable.
+  \item The countable union of countable sets is countable.
+\end{enumerate}
+\end{fact}
+
+\begin{thm}
+There does not exist $\ell:\mathcal{P}(\R)\to [0,\infty]$ such that
+\begin{enumerate}
+  \item $\ell([a,b])=b-a$
+  \item $\ell(x+E) = \ell(E)$
+  \item $\ell \left(\biguplus_n E_n\right) = \sum_n \ell(E_n)$.
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Construction of Vitali Set]
+Let $X=\mathbb{R}$. First define an equivalence relation on $[0,1)$ such that $x\sim y \iff x-y\in\mathbb{Q}$. Define $N\subseteq [0,1)$ by choosing one element from each equivalence class (note the use of Axiom of Choice). Let $R = \mathbb{Q}\cap[0,1)$ and, for each $r\in R$, define
+\[N_r = N+r \pmod{1}.\]
+That is, for every $r$, take $N$ and shift it $r$ units to the right, then move the part that ticks out back in by subtracting $1$. Note that
+\[[0,1) = \bigcup_{r\in R} N_r\]
+such that the union is disjoint by the Axiom of Choice. By 2), we have $\mu(N_r) = \mu(N)$. By 3), we have $\mu([0,1)) = 1$. However, we then have
+\[1 = \sum_{r\in R} \mu(N_r) = \sum_{r\in R} \mu(N),\]
+which is a contradiction because the RHS is either $0$ or $\infty$.
+\end{proof}
+
+\begin{definition}
+Let $X$ be a set and $\mathcal{A}\subseteq \mathcal{P}(X)$, we say that $\mathcal{A}$ is a $\sigma$-algebra if
+\begin{enumerate}
+  \item $\emptyset\in \mathcal{A}$
+  \item $A\in \mathcal{A}\implies X\setminus A\in \mathcal{A}$
+  \item $\{A_n\}\subseteq \mathcal{A}\implies \bigcup_nA_n\in \mathcal{A}$.
+\end{enumerate}
+We say that $(X,\mathcal{A})$ is a measurable space and each $A\in \mathcal{A}$ is measurable.
+\end{definition}
+
+\begin{proposition}
+Each $\sigma$-algebra is closed under countable (and finite) union, intersection, and set difference.
+\end{proposition}
+
+\begin{example}
+$(X,\mathcal{P}(X))$ is a measurable space.
+
+Also, if $X$ is uncountable, the set $\mathcal{A} = \{E\text{ countable},\ X\setminus E\text{ countable}\}$ is a $\sigma$-algebra on $X$, called the countable co-countable $\sigma$-algebra.
+
+Lastly, $\mathcal{A} = \{\emptyset, X, X\setminus A, A\}$ is also a $\sigma$-algebra for any subset $A$.
+\end{example}
+
+\begin{proposition}
+Let $X$ be a set and $\mathcal{E}\subseteq \mathcal{P}(X)$, then there exists a \emph{smallest $\sigma$-algebra}, denoted $\sigma(\mathcal{E})$, that contains all elements in $\mathcal{E}$.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+(I did this differently than Prof. Li) Simply show that the arbitrary intersection of $\sigma$-algebras is in fact a $\sigma$-algebra.
+\end{proof}
+
+\begin{definition}
+We define the Borel $\sigma$-algebra on $\R, \xoverline{R}$ (extended reals), and $[0,\infty]$ to be as follows:
+\[\mathcal{B}(\R) = \sigma(\{(x,\infty):x\in \R\})\]
+\[\mathcal{B}(\xoverline{R}) = \sigma(\{(x,\infty]:x\in \R\})\]
+\[\mathcal{B}([0,\infty]) = \sigma(\{(x,\infty):x\geq 0\}).\]
+\end{definition}
+
+\begin{example}
+These sets are in $\mathcal{B}(\R)$:
+\begin{enumerate}
+  \item $(-\infty,x]$
+  \item $(a,b]$
+  \item $(a,b)$
+  \item $[a,b]$
+  \item $\{x\}$ for all $x$
+  \item $\mathbb{Q}$.
+\end{enumerate}
+\end{example}
+
+\begin{fact}
+$|\mathcal{B}(\R)|=|\R|$, so there are definitely subsets in $\R$ that are not Borel.
+\end{fact}
+
+\begin{definition}
+Let $(X,\mathcal{A})$ and $(Y,\mathcal{B})$ be measurable spaces. A function $f:X\to Y$ is measurable (sometimes written as $\mathcal{A}-\mathcal{B}$ measurable) if, for all $B\in \mathcal{B}$, we have $f^{-1}(B)\in \mathcal{A}$.
+\end{definition}
+
+
+\begin{proposition}
+Let $(X,\mathcal{A})$ and $(Y,\mathcal{B})$ be measurable spaces and suppose $\mathcal{E}\subseteq \mathcal{B}$ and $\mathcal{B} = \sigma(\mathcal{E})$. Then a function $f:X\to Y$ is measurable if and only if $\forall E\in \mathcal{E}$, we have $f^{-1}(E) \in \mathcal{A}$.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+$\implies$ is trivial. For $\impliedby$, use the standard trick and show that
+\[\mathcal{D} = \{D\subseteq Y:f^{-1}(D)\in \mathcal{A}\}\]
+is a $\sigma$-algebra (this is straightforward, because pre-images play nice under complements and unions). Observe that $\mathcal{E}\subseteq \mathcal{D}$, so we must have $\mathcal{D}\supseteq \sigma(\mathcal{E}) = \mathcal{B}$. 
+\end{proof}
+
+\begin{corollary}
+Let $(X,\mathcal{A})$ be a measurable space. The function $f:X\to \R$ is (Borel) measurable if and only if for all $\alpha\in\R$, we have $f^{-1}(\alpha,\infty)\in \mathcal{A}$ (sometimes I'll write $f^{-1}(\alpha,\infty) \coloneqq \{f>\alpha\}$, a standard convention).
+\end{corollary}
+
+\begin{definition}
+The convention is to say that a real-valued function is measurable if it is measurable with respect to the Borel $\sigma$-algebra on $\R$ (same for extended reals, etc).
+\end{definition}
+
+\begin{proposition}
+Let $(X,\mathcal{A})$ be a measurable space and $f,g$ be measurable functions. Then, $f+g,f^2,fg,\max(f,g),\min(f,g)$ are measurable.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+The $f+g$ is tricky. Observe that $(f+g)(x)>\alpha\iff \exists q\in \mathbb{Q}$ such that $f(x)>q>\alpha-g(x)$ so we can write
+\[\{f+g>\alpha\} = \bigcup_{q\in \mathbb{Q}}\{f>q>\alpha-g\} = \bigcup_{q\in \Q} \{f>q\}\cap \{g>\alpha-q\}.\]
+$f^2$ is straightforward. Note $fg = \frac{1}{2}[(f+g)^2-f^2-g^2]$ and apply our results. For max and min, just use some union and intersection stuff with each $f,g$.
+\end{proof}
+
+\begin{proposition}
+Let $\{f_n\}$ be a sequence of measurable functions. Then $\sup_n f_n$, $\inf_n f_n$, $\liminf_n f_n$ and $\limsup_n f_n$ are all measurable.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+For $\sup_n f_n$, we can just write it as
+\[\{\sup_nf_n>\alpha\} = \bigcup_n\{f_n>\alpha\}\]
+and each of the sets in the union on the RHS are measurable. For infimum, actually consider $f_n< \alpha$ to deal with issues with strict inequality. The other results follow.
+\end{proof}
+
+\begin{definition}
+Let $(X,\mathcal{A})$ be a measurable space. We let $\chi_E$ to be the indicator (characteristic) function. A function $f:X\to\R$ is said to be \emph{simple} if it is measurable and only takes on finitely many values. The \emph{standard representation} of a simple function $f$ with range $\{z_1,\ldots,z_n\}$ is $f = \sum_{j=1}^nz_j\chi_{E_j}$ where $E_j = f^{-1}(\{z_j\})$ for each $j$ and $X = \biguplus_j E_j$.
+\end{definition}
+
+\begin{remark}
+Note that simple functions might take on other representations:
+\[\chi_E = 1\chi_E+0\chi_{E^c}.\]
+\end{remark}
+
+\begin{thm}
+Let $(X,\mathcal{A})$ be a measure space and $f:X\to[0,\infty]$ be a measurable function, then $\exists\{\varphi_n\}$ of simple functions such that $\varphi_n\uparrow f$ pointwise and $\varphi_n\uparrow f$ uniformly on any set that $f$ is bounded.
+\end{thm}
+
+\begin{proof}[Proof outline]
+The construction is known as the ruler argument. For each $n\in \N$ and $0\leq k\leq 2^{2n}-1$, consider the sets
+\[E_n^{(k)} = f^{-1} \left(\left[\frac{k}{2^n},\frac{k+1}{2^n}\right)\right)\qquad F_n = f^{-1}([2^n,\infty))\]
+We then let
+\[\varphi_n = \sum_{k=0}^{2^{2n}-1} \frac{k}{2^n}\chi_{E_n^{(k)}} + 2^n\chi_{F_n}.\]
+The increasing and the pointwise convergence follows pretty easily from this by taking $N$ large such that $1/2^N<\varepsilon$. The uniform convergence on bounded sets also follows by taking the sup norm of the difference (bounded by the ``fine-ness'' of the partition).
+\end{proof}
+
+\section{Measures}
+\begin{definition}
+Let $(X,\mathcal{A})$ be a measurable space, a function $\mu:\mathcal{A}\to[0,\infty]$ is a measure if it satisfies
+\begin{enumerate}
+  \item $\mu(\emptyset)=0$
+  \item $\mu \left(\biguplus_n E_n\right) = \sum_n \mu(E_n)$ for disjoint $\{E_n\}\subseteq \mathcal{A}$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+We say that $(X,\mathcal{A},\mu)$ is a measure space and it's a finite measure space if $\mu(X)<\infty$. It's $\sigma$-finite if $X=\bigcup_n E_n$ where each $\mu(E_n)<\infty$.
+\end{definition}
+
+\begin{example}
+Let $(X,\mathcal{A})$ be a measure space and $\mu:\mathcal{A}\to[0,\infty]$ such that
+\[
+\mu(E) = \begin{cases}
+|E| & E \text{ finite} \\
+\infty & E\text{ infinite.}
+\end{cases}
+\]
+\end{example}
+
+\begin{example}
+The Dirac $\delta$-measure for $x\in X$
+\[
+\delta_x(E) = \begin{cases}
+1 & x\in E \\
+0 & x\notin E.
+\end{cases}
+\]
+\end{example}
+
+\begin{example}
+Let $(X,\mathcal{A})$ be a measurable space with $\mathcal{A}$ be countable co-countable $\sigma$-algebra. Consider
+\[\mu(A) = \begin{cases}
+1 & X\setminus A\text{ is countable} \\
+0 & A \text{ countable.}
+\end{cases}\]
+\end{example}
+
+\begin{example}
+Lebesgue measure (to be covered).
+\end{example}
+
+\begin{lemma}
+Let $E,F\in \mathcal{A}$ with $E\subseteq F$. Then $\mu(E)\leq \mu(F)$ and, if $\mu(E)<\infty$, then $\mu(F\setminus E) = \mu(F)-\mu(E)$.
+\end{lemma}
+
+\begin{proposition}[Continuity of Measure] $ $ \newline
+\begin{enumerate}
+  \item Let $E_1\subseteq E_2 \ldots$ be measurable sets, then
+  \[\mu \left(\bigcup_n E_n\right) = \lim_n \mu(E_n).\]
+  \item $F_1\supseteq F_2 \ldots$ and $\mu(F_1)<\infty$, then
+  \[\mu \left(\bigcap_n F_n\right) = \lim_n \mu(F_n).\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof outline]
+Write $\bigcup_n E_n = \biguplus A_n$ where each $A_n = E_n\setminus (E_1\cup \ldots \cup E_{n-1})$. Then we have
+\[\mu \left(\bigcup_n E_n\right) = \lim_{n} \sum_{k=1}^n \mu(A_k) = \lim_n \mu(E_n).\]
+The second part follows (take a complement and apply previous lemma).
+\end{proof}
+
+\begin{proposition}
+Let $(X,\mathcal{A},\mu)$ be a measure space and $\{A_n\}\subseteq \mathcal{A}$. Then
+\[\mu \left(\bigcup_n A_n\right)\leq \sum_n \mu(A_n).\]
+\end{proposition}
+
+\begin{definition}
+We say that a measure $\mu$ on $(X,\mathcal{A})$ is \emph{complete} if $\forall N\in \mathcal{A}$ with $\mu(N)=0$, we have $B\in \mathcal{A}$ for all $B\subseteq N$.
+\end{definition}
+
+\begin{thm}
+Let $(X,\mathcal{A},\mu)$ be a measure space. Let
+\[\xoverline{\mathcal{A}} = \{A\cup F:A\in \mathcal{A},\ F\subseteq N\text{ for some }N\in \mathcal{A}\text{ and }\mu(N)=0\}.\]
+Then $\xoverline{\mathcal{A}}$ is a $\sigma$-algebra on $X$ and there exists a \emph{unique} extension of $\mu$, say $\xoverline{\mu}$, to the complete measure on $\mathcal{A}$. Extension in the sense that $\xoverline{\mu}\big|_{\mathcal{A}} = \mu$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+For each $A\cup F\in \xoverline{\mathcal{A}}$, let $\xoverline{\mu}(A\cup F) = \mu(A)$. Check that it's a $\sigma$-algebra is straight-forward. We want to check that $\xoverline{\mu}$ is well-defined. Let $A\cup F=B\cup E$ where $F\subseteq N_1$ and $E\subseteq N_2$ for two null sets and let $N = N_1\cup N_2$. We then have $\mu(A) = \mu(A\cup N)\geq \mu(B)$ and the other side is similar.
+
+The fact that $\xoverline{\mu}$ is a measure is straightforward as well. For uniqueness, assume that $\xoverline{\mu}'$ is another measure that extends $\mu$. Consider $F\subseteq N$ and $A\cup F\in \mathcal{A}$. We then have
+\[\xoverline{\mu}'(A\cup F)\leq \xoverline{\mu}'(A\cup N) = \mu(A) = \xoverline{\mu}(A\cup F).\]
+\[\xoverline{\mu}'(A\cup F)\geq \xoverline{\mu}'(A) = \mu(A) = \mu(A\cup N) = \xoverline{\mu}(A\cup N)\geq \xoverline{\mu}(A\cup F).\qedhere\]
+\end{proof}
+
+\begin{definition}
+Let $(X,\mathcal{A},\mu)$ be a measure space, we say a property $P$ holds almost everywhere if there exists some $E\in \mathcal{A}$ such that $\mu(X\setminus E) = 0$ and $P$ holds for all $x\in E$.
+\end{definition}
+
+\begin{remark}
+The set $\{x:\text{P holds}\}$ might not be measurable, since the measure space might not be complete.
+\end{remark}
+
+\begin{proposition}
+Let $(X,\mathcal{A},\mu)$ be a complete measure space. then if a function $f:X\to \R$ is measurable and $f=g$ almost everywhere, then $g$ is measurable. If $f_n\to f$ almost everywhere, where each $f_n$ is measurable, then $f$ is measurable.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+For the first conclusion, write
+\[\{g>\alpha\} = (\{g>\alpha\}\cap E)\cup (\{g>\alpha\}\cap E^c) = (\{f>\alpha\}\cap E)\cup (\{g>\alpha\}\cap E^c)\]
+where $E$ is the set upon which $f=g$. The fact that $E$ is measurable and the RHS is measurable follows from completeness. Also, the second conclusion for almost everywhere limit follows from this as well.
+\end{proof}
+
+\section{Integration}
+
+\begin{definition}
+We define $M^+ = \{f:X\to[0,\infty]:f\text{ is measurable}\}$.
+\end{definition}
+
+\begin{definition}
+Let $s\in M^+$ be a simple function such that $s = \sum_{i=1}^ka_i\chi_{E_i}$ is its standard form. Then, for each $A\in \mathcal{A}$, we have
+\[\int_A s\ \mathrm{d}\mu = \sum_{i=1}^k a_i\mu(E_i\cap A).\]
+\end{definition}
+
+\begin{remark}
+We set $0\cdot\infty = 0$. Also, note that an integration can be infinite. Lastly, if $A=X$ in the above definition, then we have
+\[\int_X s\ \mathrm{d}\mu = \sum_{i=1}^k a_i\mu(E_i).\]
+As in Folland, I will sometimes use
+\[\int\varphi\coloneqq \int_X \varphi\ \mathrm{d}\mu\]
+for integration \emph{over the entire space }when the context is clear.
+\end{remark}
+
+\begin{proposition}
+Let $s\in M^+$ and $A\in \mathcal{A}$, then we have
+\[\int_A s\ \mathrm{d}\mu = \int_X s\chi_A\ \mathrm{d}\mu.\]
+\end{proposition}
+
+\begin{proposition}
+Let $s,t\in M^+$ be simple functions and $c\geq 0$, then
+\begin{enumerate}
+  \item $\int s+t = \int s+\int t$
+  \item $\int cs = c\int s$ 
+  \item We can define a measure $\lambda:\mathcal{A}\to[0,\infty]$ by setting
+  \[\lambda(E) = \int_E s\ \mathrm{d}\mu\]
+  for all $E\in \mathcal{A}$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof outline]
+For 1, consider taking intersections on the sets in the standard representations of $s$ and $t$ in order to get the standard representation of $s+t$. 2 and 3 are straightforward, just follow the definitions and apply the fact that $\mu$ is countably additive on 3.
+\end{proof}
+
+Now, recall that $f\in M^+$ if and only if $f=\lim_n s_n$ where $s_n\uparrow f$ is a sequence of increasing simple functions. Essentially, we want to define
+\[\int f = \lim_n \int s_n\]
+but there might be more than one sequence $s_n\uparrow f$. Hence, if $t_n\uparrow f$ for another sequence of simple functions $t_n$, we need that
+\[\lim_n\int s_n = \lim_n\int t_n.\]
+The next few results builds up this concept.
+
+\begin{proposition}
+Let $\{F_j\}\subseteq \mathcal{A}$ for $j=1,\ldots,n$ and $\beta_1,\ldots,\beta_n\geq 0$. Then, for all $A\in \mathcal{A}$, we have
+\[\int_A \sum_{j=1}^n\beta_j\chi_{F_j}\ \mathrm{d}\mu = \sum_{j=1}^n\beta_j\mu(F_j\cap A).\]
+\end{proposition}
+
+\begin{remark}
+Note that, in the above proposition, $F_j$'s are not assumed to be disjoint or unioned to be the whole space $X$. Hence, it implies that \emph{any} representation of a simple function will yield the same integral.
+\end{remark}
+
+\begin{proof}[Proof outline]
+For each $j$, write the $\beta_j\chi_{F_j}$ in standard representation and apply linearity of integration.
+\end{proof}
+
+\begin{proposition}\label{prop:SimpleFctIndep}
+Let $\{s_n\}$ be an increasing sequence of simple functions in $M^+$ and $t$ a simple function in $M^+$ such that $\lim_n s_n\geq t$ for all $x\in X$. Then we have
+\[\lim_n \int_X s_n\ \mathrm{d}\mu \geq \int_X t\ \mathrm{d}\mu.\]
+\end{proposition}
+
+\begin{proof}[Proof outline]
+We will show that $\lim_n \int s_n\geq c\int t$ for all $c\in(0,1)$ and that gives us our result. Construct $A_n = \{s_n\geq ct\}$ for each $n$. Now, $A_n$ is an increasing sequence and that $X = \bigcup_n A_n$ because $c<1$ (that is, for each $x$, there exists $n$ such that $s_n(x)\geq ct(x)$). Now, we get
+\[\int s_n \geq c\int_{A_n}t\ \mathrm{d}\mu \implies \lim_n\int s_n \geq c \lim_n \int_{A_n}t\ \mathrm{d}\mu.\]
+Applying continuity from below of the measure defined by $E\mapsto \int_E t\ \mathrm{d}\mu$ gives us the desired result.
+\end{proof}
+
+\begin{definition}
+For each $f\in M^+$ and $s_n\uparrow f$ of simple functions, we define
+\[\int_X f\ \mathrm{d}\mu\coloneqq \lim_n\int_X s_n \ \mathrm{d}\mu.\]
+We also define, for $A\in \mathcal{A}$,
+\[\int_A f\ \mathrm{d}\mu = \int_X f\chi_A\ \mathrm{d}\mu.\]
+\end{definition}
+
+\begin{remark}
+The above definition is independent of the sequence of simple functions and thus is well defined by \Cref{prop:SimpleFctIndep}. That is, suppose $\lim_n s_n = \lim_k t_k$ where $s_n,t_k$ are increasing simple functions. Then, for each $j\in\N$, we have $\lim_ns_n = \lim_k t_k \geq t_j$ and thus
+\[\lim_n\int s_n\geq \int t_j\ (\forall j\in\N)\implies \lim_n\int s_n\geq \lim_j\int t_j.\]
+The symmetric result applies to ensure the limits of their integration are identical.
+\end{remark}
+
+\begin{proposition}\label{prop:AltMPlusInt}
+It is equivalent to define
+\[\int_X f\ \mathrm{d}\mu = \sup\left\{\int_X s\ \mathrm{d}\mu:0\leq s\leq f;\ s\text{ simple}\right\}.\]
+\end{proposition}
+
+\begin{proof}[Proof outline]
+For $\leq$, notice that the LHS is the supremum of a sequence of simple functions in the set on the RHS. For $\geq$, take some $t$ in the set on the RHS and apply \Cref{prop:SimpleFctIndep}.
+\end{proof}
+
+\begin{proposition}
+Let $f,g\in M^+$ and $c\geq 0$, we then get
+\begin{enumerate}
+  \item $f\geq g \implies \int f\geq \int g$
+  \item $\int f+g = \int f+ \int g$
+  \item $\int cf = c\int f$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof outline]
+1 is trivial by \Cref{prop:AltMPlusInt} (consider the two sets of simple functions taken supremum over). For 2, take two sequences of simple functions and observe their sum converge to the desired results and note the independence of simply functions taken for convergence, as shown in \Cref{prop:SimpleFctIndep}. Lastly, 3 is also straightforward.
+\end{proof}
+
+\begin{thm}[Monotone Convergence Theorem]
+Let $\{f_n\}$ be an \emph{increasing} sequence of functions in $M^+$ such that $f_n\to f$ for all $x\in X$, then $f\in M^+$ and we have
+\[\lim_n \int_X f_n\ \mathrm{d}\mu = \int_X f\ \mathrm{d}\mu.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+First, observe that
+\[\int f\geq \lim_n\int f_n\]
+by monotonicity of the integral. Take a sequence of $s_k\uparrow f$ so that $\int f = \lim_k \int s_k$. Using a similar argument to \Cref{prop:SimpleFctIndep}, we cann show that, since $\lim_n f_n = f \geq s_k$ for all $k\in\N$, we get that
+\[\lim_n\int f_n\geq \int s_k (\forall k\in\N) \implies \lim_n f_n \geq \lim_k\int s_k = \int f.\qedhere\]
+\end{proof}
+
+\begin{corollary}
+Let $\{f_n\}\subseteq M^+$ and $f(x) = \sum_n f_n(x)$. Then we have
+\[\int_X f\ \mathrm{d}\mu = \sum_n\int_X f_n\ \mathrm{d}\mu.\]
+\end{corollary}
+
+\begin{thm}
+Let $f\in M^+$, then we have
+\[\int_X f\ \mathrm{d}\mu=0\iff f=0\ \mu-\text{ almost everywhere}.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+Both sides can be proven using contradiction. For $\implies$, write $\{f>0\} = \bigcup_n \{f>1/n\}$ (all these are measurable since $f$ is). Then we get $\mu(\{f>0\})>0\implies \mu(\{f>1/N\})>0$ for some $N$. Then integrate over that region. For $\impliedby$, use the simple function approximation to get some positive measure set upon which $f$ takes strictly positive value.
+\end{proof}
+
+\begin{thm}[Fatou's Lemma]
+Let $\{f_n\}\subseteq M^+$, then
+\[\int_X \liminf_n f_n\ \mathrm{d}\mu \leq \liminf_n \int_X f_n.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+Write $g_k = \inf_{i\geq k}f_i$ so that $g_k$ is an increasing sequence of functions in $M^+$. Then observe
+\[\int \liminf_k f_k = \int \lim_kg_k = \liminf_k\int g_k \leq \liminf_k \int f_k\]
+by applying MCT and observing $g_k\leq f_k$.
+\end{proof}
+
+\begin{definition}
+Let $(X,\mathcal{A},\mu)$ be a measure space, then $f:X\to \C$ is a measurable function if $f=u+iv$ where $u,v:X\to\R$ are both measurable. Then, $f:X\to\C$ is integrable (write $f\in L^1$) if $f$ is measurable and $\int_X |f|\ \mathrm{d}\mu<\infty$.
+\end{definition}
+
+\begin{remark}
+If $f=u+iv$ is measurable (that is $u,v$ are measurable), then so is $|f| = \sqrt{u^2+v^2}$.
+\end{remark}
+
+\begin{definition}
+For a function $\varphi:X\to\R$, we define $\varphi^+ = \max(\varphi,0)$ and $\varphi^- = \max(-\varphi,0)$. Hence, $\varphi= \varphi^+-\varphi^-$ and $|\varphi| = \varphi^++\varphi^-$.
+\end{definition}
+
+\begin{lemma}
+A function $f = (u^+-u^-)+i(v^+-v^-)$ is integrable if and only if $u^+,u^-,v^+,v^- \in M^+\cap L^1$. 
+\end{lemma}
+
+\begin{proof}[Proof outline]
+$\implies$ is straightforward, just dominate each of those functions with $|f|$. Also, for $\impliedby$, use the fact that $\sqrt{a+b}\leq \sqrt{a}+\sqrt{b}$ for positive $a,b$.
+\end{proof}
+
+\begin{definition}
+Let $f\in L^1$, we define
+\[\int_X f \mathrm{d}\mu= \int_X u^+\ \mathrm{d}\mu + \int_X u^-\ \mathrm{d}\mu + i \left(\int_X v^+\ \mathrm{d}\mu - \int_X v^-\ \mathrm{d}\mu\right).\]
+\end{definition}
+
+\begin{proposition}
+For $f,g\in L^1$ and $c\in \C$, we have 
+\begin{enumerate}
+  \item $f+g\in L^1$ and $\int f+g = \int f+\int g$
+  \item $cf\in L^1$ and $\int cf = c\int f$
+  \item $\left|\int f\right| \leq \int |f|$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof outline]
+The first 2 are pretty straightforward. For number 3, let $\alpha = \overline{\mathrm{sgn}(f)}$ and see that $|\alpha|=1$. Now, this gives us
+\[\int \alpha f = \left|\int f\right|\]
+so the LHS must be real valued. Write $\alpha f = u_\alpha + iv_\alpha$ and get
+\[\left|\int f\right| = \int u_\alpha \leq \int |u_\alpha| \leq \int|\alpha f| = \int|f|.\qedhere\]
+\end{proof}
+
+\begin{thm}[Dominated Convergence Theorem]
+Let $\{f_n\}\subseteq L^1$ such that $f_n\to f$ pointwise and $\exists g\in L^1$ such that $|f_n(x)|\leq g(x)$ for all $n\in \N$ and $x\in X$. Then, $f$ is measurable and $f\in L^1$. Further we get
+\[\lim_n \int_X |f-f_n|\ \mathrm{d}\mu = 0\]
+and that, consequently,
+\[\lim_n \int_X f_n\ \mathrm{d}\mu = \int_Xf\ \mathrm{d}\mu.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+Observe that $|f|\leq g$ for integrability and that $2g\geq |f_n-f|$. We then can apply Fatou's Lemma to get
+\[\int 2g = \int \liminf_n 2g-|f_n-f| = \int 2g - \limsup_n \int |f_n-f|\]
+and thus $\limsup_n \int |f_n-f| \leq 0$, which gives us that $\lim_n \int |f_n-f| = 0$.
+\end{proof}
+
+\begin{thm}[Almost Everywhere Dominated Convergence Theorem]
+Let $\{f_n\}\subseteq L^1$ such that $f_n\to f$, where $f$ is measurable, pointwise almost everywhere and $\exists g$ such that, for each $n$, we have $|f_n(x)|\leq g(x)$ for almost every $x$. Then $f\in L^1$ and
+\[\lim_n \int_X |f-f_n|\ \mathrm{d}\mu = 0\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+The key is to construct some set $E$ such that $\mu(X\setminus E) = 0$ and that the bounds on $f_n(x)$ and convergence all happen \emph{simultaneously} on such $E$. This can be done by taking null sets $F_n$ for each $n$ such that $|f_n(x)|\leq g(x)$ on $X\setminus F_n$ and some null set $N$ on which $f_n\to f$ on $X\setminus N$. We can then let $E = X\setminus [\bigcup_n F_n\cup N]$ and note that countable union of null set is a null set. Then define $\wt{f}_n$ to be $f_n$ on $E$ and $0$ elsewhere, similar for $\wt{f}$. We then can apply DCT on those modified versions and, since they are only different on a co-null set from our original versions, we can ensure their integrals are the same.
+\end{proof}
+
+\begin{thm}
+Suppose $f:X\times[a,b]\to\C$ and that, for all $t\in[a,b]$, we have $f(\cdot,t):X\to\C$ is integrable. Let
+\[F(t) = \int_X f(x,t)\ \mathrm{d}\mu(x).\]
+We then have
+\begin{enumerate}
+  \item If there exists $g\in L^1$ such that $|f(x,t)|\leq g(x)$ for all $x,t$ and $\lim_{t\to t_0}f(x,t) = f(x,t_0)$ for all $x\in X$, then $\lim_{t\to t_0}F(t) = F(t_0)$.
+  \item Suppose that $\frac{\partial f}{\partial t}$ exists and $\exists g\in L^1$ such that $\left|\frac{\partial f}{\partial t}(x,t)\right|\leq g(x)$ for all $x,t$. Then $F$ is differentiable and
+  \[F'(t) = \int_X \frac{\partial f}{\partial t}(x,t)\ \mathrm{d}\mu(x).\]
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+Part 1, just apply the sequence criterion for continuous limit and use DCT. For part 2, notice $F'(t_0)$ exists if and only if
+\[\lim_n \int \frac{f(x,t_n)-f(x,t_0)}{t_n-t_0}\ \mathrm{d}\mu(x)\]
+exists and agree for all $t_n\to t_0$. Take arbitrary $t_n\to t_0$ and set
+\[\varphi(x) = \frac{\partial f}{\partial t}(x,t_0) = \lim_n \frac{f(x,t_n)-f(x,t_0)}{t_n-t_0} = \lim_n \varphi_n(x).\]
+By the mean value theorem, we can bound
+\[|\varphi_n(x)|\leq \left|\frac{\partial f}{\partial t}(x,t')\right|\leq g(x)\]
+and then apply DCT.
+\end{proof}
+
+\newpage
+
+\section{Construction of Measures}
+\begin{definition}
+A semiring is a collection $\mathcal{E}\subseteq \mathcal{P}(X)$ such that
+\begin{enumerate}
+  \item $\mathcal{E}\ne \emptyset$
+  \item $A,B\in \mathcal{E} \implies A\cap B\in \mathcal{E}$
+  \item If $A,B\in \mathcal{E}$, then there exists $E_1,\ldots, E_k\in \mathcal{E}$ such that $A\setminus B = \biguplus_{i=1}^k E_i$.
+\end{enumerate}
+\end{definition}
+
+\begin{example}
+Let $X = \R$ and $\mathcal{E} = \{(a,b]:-\infty<a\leq b < \infty\}$, then $\mathcal{E}$ is a semiring and we have $\sigma(\mathcal{E}) = \mathcal{B}$.
+\end{example}
+
+\begin{proof}[Proof outline]
+For the second claim, observe that every $(a,\infty)$ can be written as a countable union of sets in $\mathcal{E}$. So any $\sigma$-algebra containing $\mathcal{E}$ should contain the set that generates the Borel $\sigma$-algebra.
+\end{proof}
+
+\begin{example}
+Let $(X,\mathcal{A})$ and $(Y,\mathcal{B})$ and take $\mathcal{E} = \{A\times B:A\in \mathcal{A},\ B\in \mathcal{B}\} = \mathcal{A}\times \mathcal{B}$. Then $\mathcal{E}$ is a semiring and its elements are called \emph{measurable rectangles}. We denote $\sigma(\mathcal{E})$ to be the product $\sigma$-algebra of $(X,\mathcal{A})$ and $(Y,\mathcal{B})$.
+\end{example}
+
+\begin{definition}
+Let $\mathcal{E}$ be a semiring. A function $\mu_0:\mathcal{E}\to[0,\infty]$ is a premeasure if
+\begin{enumerate}
+  \item $\mu_0(\emptyset)=0$
+  \item $\mu_0$ is finitely additive: $\mu_0(E) = \sum_{n=1}^k \mu(E_n)$ if $E=\biguplus_{n=1}^k E_n$ and $E,E_n\in \mathcal{E}$.
+  \item $\mu_0$ is countably sub-additive: If $E\subseteq \bigcup_n E_n$ and $E, E_n\in \mathcal{E}$, then $\mu_0(E) \leq \sum_n \mu(E_n)$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+We say that a premeasure $\mu_0$ is $\sigma$-finite if $\exists \{E_n\}\subseteq \mathcal{E}$ such that $X = \bigcup_n E_n$ and $\mu_0(E_n)<\infty$.
+\end{definition}
+
+\begin{example}
+Let $X=\R$ and $\mathcal{E} = \{(a,b]:-\infty<a\leq b < \infty\}$. We define $\mu_0((a,b]) = b-a$. Then $\mu_0$ is $\sigma$-finite a pre-measure.
+\end{example}
+
+\begin{proof}[Proof outline]
+Finite additive comes from telescoping sums. For countable sub-additive, we want to show that
+\[(a,b] \subseteq \bigcup_n (a_n,b_n]\implies b-a \leq \sum_n (b_n-a_n).\]
+We observe that, for all $\varepsilon>0$, we have
+\[[a+\varepsilon,b]\subseteq \bigcup_n \left(a_n,b_n+\frac{\varepsilon}{2^n}\right) \implies [a+\varepsilon,b]\subseteq \bigcup_{n=1}^k \left(a_n,b_n+\frac{\varepsilon}{2^n}\right)\]
+by compactness. Using Riemann integration, we can show that
+\[b-(a+\varepsilon) \leq \sum_{n=1}^k b_n+\frac{\varepsilon}{2^n}-a_n \leq \sum_n b_n-a_n+\varepsilon.\qedhere\]
+\end{proof}
+
+\begin{example}
+Let $(X,\mathcal{A},\mu)$ and $(Y,\mathcal{B},\lambda)$ be measure spaces and let $\pi:\mathcal{A}\times \mathcal{B}\to[0,\infty]$ be such that $\pi(A\times B) = \mu(A)\lambda(B)$. Then $\pi$ is premeasure.
+\end{example}
+
+\begin{proof}[Proof outline]
+For countable sub-additivity, let $A\times B \subseteq \bigcup_n A_n\times B_n$ so that
+\[\chi_{A\times B}\leq \sum_n\chi_{A_n\times B_n}\implies \chi_{A}\chi_B\leq \sum_n\chi_{A_n}\chi_{B_n}.\]
+Then, just fix $y\in Y$ and integrate with respect to $x$. Then do the same for fixing $x$. Note the use of the MCT.
+\end{proof}
+
+We want to extend each premeasure on a semiring into a measure on the $\sigma$-algebra generated by the semiring. The following theorem will give us a uniqueness result, given that the existence is shown (we will show this later).
+
+\begin{thm}\label{thm:PreMeasureUniqueExt}
+Let $\mathcal{E}$ be a semiring on $X$, and let $\mu_1$ and $\mu_2$ be measures on $(X,\sigma(\mathcal{E}))$ such that $\mu_1\big|_{\mathcal{E}}=\mu_2\big|_{\mathcal{E}}$, then
+\begin{enumerate}
+  \item Let $E\in \mathcal{E}$ with $\mu_1(E)<\infty$, then $\forall A\in \sigma(\mathcal{E})$, we have $\mu_1(A\cap E) = \mu_2(A\cap E)$.
+  \item If $\mu_1\big|_{\mathcal{E}}$ is a $\sigma$-finite premeasure, then $\mu_1=\mu_2$ (on $\sigma(\mathcal{E})$).
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+We'll prove 2 here, assuming 1. Let $X = \bigcup_n E_n$ where $E_n\in \mathcal{E}$, we can write
+\[X= \bigcup_n E_n = \biguplus_n (E_n\setminus (E_1\cup E_2\cup\ldots\cup E_{n-1})  = \biguplus_n F_n\]
+where each $F_n\in \mathcal{E}$ by the structure of semiring and $\mu_1(F_n)\leq\mu_1(E_n)<\infty$ (same for $\mu_2$) for all $n$. Now we let $A\in \sigma(\mathcal{E})$. We then get
+\[A = \biguplus_n (A\cap F_n)\implies \mu_1(A) = \sum_n \mu_1(A\cap F_n) = \sum_n \mu_2(A\cap F_n) = \mu_2(A).\qedhere\]
+\end{proof}
+
+
+\begin{remark}
+Assumption that the \emph{premeasure} is $\sigma$-finite \textbf{\emph{cannot}} be replaced with the assumption that $\mu_1$ is $\sigma$-finite.
+\end{remark}
+
+\begin{example}
+Consider $(\R,\mathcal{B})$ with the measures $\mu_1(A) = \#(A\cap \Q)$ and $\mu_2(A) = \#(A\cap (\Q\cup \{e\}))$. $\mu_1$ is $\sigma$-finite because $\mu_1(\R\setminus\Q) = 0$ (so is $\mu_2$.) But any intervals have infinitely many rationals and hence neither are $\sigma$-finite as premeasures. However, notice $\mu_1(\{e\})=0\ne1=\mu_2(\{e\})$.
+\end{example}
+
+\begin{definition}
+A collection $\mathcal{E}\subseteq \mathcal{P}(X)$ is a $\pi$-system if $\mathcal{E}\neq\emptyset$ and $A,B\in \mathcal{E}\implies A\cap B\in \mathcal{E}$. Note that semirings are $\pi$-systems.
+\end{definition}
+
+\begin{definition}
+A collection $\mathcal{D}\subseteq \mathcal{P}(X)$ is a $\lambda$-system if
+\begin{enumerate}
+  \item $\emptyset\in \mathcal{D}$
+  \item $A\in \mathcal{D}\implies A^c\in \mathcal{D}$
+  \item Disjoint $\{A_n\}\subseteq \mathcal{D}\implies \biguplus_n A_n\in \mathcal{D}$.
+\end{enumerate}
+\end{definition}
+
+\begin{thm}[Dynkin's $\pi\text{-}\lambda$ Theorem]
+Let $\mathcal{E}$ be a $\pi$-system, then $\sigma(\mathcal{E})= \lambda(\mathcal{E})$.
+\end{thm}
+
+We now prove part 1 of \Cref{thm:PreMeasureUniqueExt}.
+
+\begin{proof}[Proof outline]
+Let $E\in \mathcal{E}$ be such that $\mu_1(E) = \mu_2(E)<\infty$. We let
+\[\mathcal{F} = \{A\in \sigma(\mathcal{E}):\mu_1(A\cap E) = \mu_2(A\cap E)\}.\]
+We then show that $\mathcal{E}\subseteq \mathcal{F}$. Then, we show that $\mathcal{F}$ is a $\lambda$-system, and thus $\mathcal{F}\supseteq \lambda(\mathcal{E})=\sigma(\mathcal{E})$ and we're done.
+\end{proof}
+
+\begin{definition}
+Let $X$ be a set and $\mu^*:\mathcal{P}(X)\to[0,\infty]$ is an outer measure if
+\begin{enumerate}
+  \item $\mu^*(\emptyset)=0$
+  \item $\mu^*(A)\leq \mu^*(B)$ for $A\subseteq B$
+  \item $\mu^* \left(\bigcup_n E_n\right)\leq \sum_n \mu^*(E_n)$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}
+We say that a set $A\subseteq X$ is $\mu^*$-measurable if, $\forall E\subseteq X$, we have
+\[\mu^*(E) = \mu^*(E\cap A) + \mu^*(E\setminus A).\]
+Note that $E\setminus A = E\cap A^c$.
+\end{definition}
+
+\begin{remark}
+Note that $A\subseteq X$ is $\mu^*$-measurable if and only if for all $E\subseteq X$ with $\mu(E)<\infty$, we have $\mu^*(E)\geq \mu^*(E\cap A)+\mu^*(E\setminus A)$. We denote
+\[\mathcal{M}_{\mu^*} = \{E\subseteq X:E\text{ is $\mu^*$-measurable}\}\]
+to be the set of $\mu^*$-measurable subsets. Further, $\emptyset,X$ and $A$ where $\mu^*(A)=0$ are always $\mu^*$-measurable.
+\end{remark}
+
+\begin{thm}[Caratheodory's Theorem]
+Let $\mu^*$ be an outer measure, then $\mathcal{M}_{\mu^*}$ is a $\sigma$-algebra and $\mu^*\big|_{\mathcal{M}_{\mu^*}}$ is a complete measure.
+\end{thm}
+
+\begin{proposition}
+Let $\mathcal{E}\subseteq \mathcal{P}(X)$ be such that $\emptyset\in\mathcal{E}$ and $\rho:\mathcal{E}\in[0,\infty]$ such that $\rho(\emptyset)=0$. For $A\subseteq X$, define
+\[\mu^*(A) = \inf\left\{\sum_n \rho(E_n):A\subseteq \bigcup_n E_n,\ E_n\in \mathcal{E}\right\}\]
+with the understanding that $\inf\emptyset=\infty$. Then, $\mu^*$ is an outer-measure. Further, if $\rho$ is countably sub-additive, then $\mu^*\big|_{\mathcal{E}} = \rho$.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+The only non-trivial check for the first claim is countable sub-additivity. Let $A \subseteq \bigcup_n A_n$. Note that it's sufficient to consider  Let $\varepsilon>0$, then take a cover of $\{E_n^{(k)}\}\subseteq \mathcal{E}$ such that $A_n\subseteq \bigcup_k E_n^{(k)}$ and $\sum_k \rho(E_n^{(k)}) < \mu^*(A_n)+\frac{\varepsilon}{2^n}$. We then have $A\subseteq \bigcup_n \bigcup_k E_n^{(k)}$ and thus
+\[\mu^*(A)\leq \sum_n\sum_k \rho(E_n^{(k)}) < \sum_n \mu^*(A_n)+\varepsilon.\]
+
+For the second claim, suppose that $\rho$ is countable sub-additive. First, $\mu^*(E)\leq \rho(E)$ for $E\in \mathcal{E}$ (it's its own cover...). Further, let $E\subseteq \bigcup_n E_n$ be any cover, we then get
+\[\rho(E)\leq \sum_n\rho(E_n)\implies \rho(E)\leq \mu^*(E).\qedhere\]
+\end{proof}
+
+Note that one can have an outer measure that does not agree with the $\rho$ on $\mathcal{E}$ and, more alarmingly, not all of $\mathcal{E}$ is necessarily measurable (by the definition of measurable with the outer measure, of course).
+
+\begin{example}
+Let $X=\{a,b\}$ and $\mathcal{E} = \mathcal{P}(X)$ where $\rho(\emptyset)=0$, $\rho(\{a\}) = \rho(\{b\}) = 2$ and $\rho(X)=1$. We can see that $\mu^*(\emptyset)=0$ and $\mu^*(E)=1$ for all other $E\in \mathcal{E}$. As a result, the only measurable sets are $\emptyset,X$ and $\mu^*$ does not agree with $\rho$.
+\end{example}
+
+\begin{thm}
+Let $\mathcal{E}$ be a semiring on $X$ and $\mu_0$ a premeasure on $\mathcal{E}$ and let $\mu^*$ be the outer measure induced by $\mu_0$, we then have
+\begin{enumerate}
+  \item $\mu^*\big|_{\mathcal{E}}=\mu_0$
+  \item $\mathcal{E}\subseteq \mathcal{M}_{\mu^*}$.
+\end{enumerate}
+Moreover, if $\mu_0$ is $\sigma$-finite, then $\mu^*\big|_{\sigma(\mathcal{A})}$ is the unique extension on $\mu_0$ to $(X,\sigma(\mathcal{E}))$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+The first conclusion is trivial since the premeasure is countably sub-additive. We want to show the second conclusion. Take some $E\in \mathcal{E}$ and arbitrary set $A\subseteq X$ such that $\mu^*(A)<\infty$. First, take a cover $A\subseteq \bigcup_n A_n$ where $\{A_n\}\subseteq \mathcal{E}$ such that $\sum \mu_0(A_n)<\mu^*(A)+\varepsilon$. Then express
+\[\bigcup_nA_n\cap E = \bigcup_n (A_n\cap E)\qquad \bigcup_n A_n\setminus E = \bigcup_n\biguplus_{k=1}^{m_n}C_k\]
+where each $A_n\cap E$ and $C_k$ are in $\mathcal{E}$ (note the use of the semiring structure). Hence, we get
+\[\mu_0(A_n) = \mu_0(A_n\cap E) + \sum_{k=1}^{m_n}\mu_0(C_k).\]
+Also note
+\[\mu^*(A_n\setminus E)\leq \sum_{k=1}^{m_n}\mu^*(C_k) = \sum_{k=1}^{m_n}\mu_0(C_k).\]
+Thus we get
+\begin{align*}
+\mu^*(A\cap E) + \mu^*(A\setminus E) &\leq \mu^* \left(\bigcup_n A_n\cap E\right)+\mu^* \left(\bigcup_n A_n\setminus E\right) \\
+& \leq \sum_n \mu^*(A_n\cap E) + \sum_n \mu^*(A_n\setminus E) \\
+& \leq \sum_n \mu_0(A_n\cap E) + \sum_n\sum_{k=1}^{m_n}\mu_0(C_k) \\
+& = \sum_n \left(\mu_0(A_n\cap E) + \sum_{k=1}^{m_n}\mu_0(C_k)\right) \\
+& =\sum_n \mu_0(A_n) \leq \mu^*(A)+\varepsilon.\qedhere
+\end{align*}
+\end{proof}
+
+\begin{definition}
+Let $X=\R$ and $\mathcal{E} = \{(a,b]\}$ as before and define $\mu_0((a,b])=b-a$. We then let $\mu^*$ be the outer measure induced by $\mu_0$ and call the collection of $\mathcal{M}_{\mu^*}$ the Lebesgue measurable sets and $\mu^*\big|_{\mathcal{M}_{\mu^*}}$ the Lebesgue measure. We will use $\mathcal{L}$ and $m$ to denote those from now on, respectively. Note that we now have a complete measure space.
+\end{definition}
+
+Now, by our construction, since our $\mu_0$ is $\sigma$-finite, the measure $m\big|_{\mathcal{B}}$ is a unique extension on $\mu_0$ to $\sigma(\mathcal{E}) = \mathcal{B}$ the Borel sets. Of course, $\mathcal{L}$ is a $\sigma$-algebra that contains $\mathcal{E}$, so we have the following relation:
+\[
+\mathcal{B}\subseteq \mathcal{L}\subseteq \mathcal{P}(\R).
+\]
+It turns out, each of those containment is \emph{strict}. To see the right-most containment, first consider the following proposition:
+
+\begin{proposition}
+Let $E\in \mathcal{L}$ and $x\in\R$, then $x+E,xE\in \mathcal{L}$ and
+\[m(x+E)=m(E)\qquad m(xE)=|x|m(E).\]
+\end{proposition}
+
+\begin{proof}[Proof outline]
+First show the (Lebesgue) outer measure $\mu^*$ is invariant under shift (subtracting the same stuff from the intervals doesn't matter). We now want to show, for all $A\subseteq \R$
+\[\mu^*(A)\geq \mu^*(A\cap (x+E))+\mu^*(A\setminus(x+E)).\]
+Let $A = x+B$ and notice $x+B\cap x+E = x+(B\cap E)$ and $x+B\setminus x+E = x+(B\setminus E)$ so we rewrite our condition to
+\[\mu^*(x+B)\geq \mu^*(x+(B\cap E))+\mu^*(x+(B\setminus E))\]
+which is true because of invariance of outer measure under shift. Of course, the Lebesgue measure is just the restriction of the outer measure, so we're done.
+\end{proof}
+
+Hence, by the Vitali set, we have $\mathcal{L}\subsetneq \mathcal{P}(\R)$. We can also show that $\mathcal{B}\subsetneq \mathcal{L}$ by constructing the Cantor Set.
+
+\begin{proof}[Construction of the Cantor Set]
+Let $I=[0,1]$ and each $I_n$ we go to each interval and take out the middle $1/3$. Let $C = I\setminus\biguplus_n I_n$. We can compute
+\[m(C) = 1 - \sum_n \frac{2^{n-1}}{3^n} = 1-1= 0.\]
+Further, we can show that
+\[C = \left\{\sum_n \frac{a_n}{3^n}:a_n=0\text{ or }2\right\}\]
+is in bijection with the sequence $\{0,2\}^{\N}$. Hence, $|C| = 2^{|\N|} = |\R|$. Now, since $|\mathcal{B}|=|\R|$, there must exist some $A\subseteq C$ such that $A\notin \mathcal{B}$ but $A\in \mathcal{L}$ because the Lebesgue measure is complete.
+\end{proof}
+
+\begin{thm} \label{thm:PreMeasureComplete}
+Let $\mathcal{E}$ be a semiring and $\mu_0$ be a $\sigma$-finite pre-measure on $\mathcal{E}$ and $\mu^*$ be the outer measure on $\mathcal{P}(X)$ induced by $\mu_0$. Then $(X, \mathcal{M}_{\mu^*},\mu^*\big|_{\mathcal{M}_{\mu^*}})$ is the completion of $(X,\sigma(\mathcal{E}),\mu^*\big|_{\sigma(\mathcal{E})})$.
+\end{thm}
+
+
+\textbf{Question:} Let $(X,\mathcal{A},\mu)$ be a measure space and consider its completion $(X,\xoverline{A},\bar{\mu})$. Let $(X,\mathcal{B},\lambda)$ be another measure space that is complete and $\mathcal{B}\supseteq \mathcal{A}$ and that $\lambda\big|_{\mathcal{A}} = \mu$. Then, is it true that $\mathcal{B}\supseteq \xoverline{\mathcal{A}}$? I believe so, here is my proof:
+
+\begin{proof}
+Let $A\cup F\in \xoverline{\mathcal{A}}$ be such that $A\in \mathcal{A}$ and $F\subseteq N$ for $N\in \mathcal{A}$ such that $\mu(N)=0$. Now, since $\lambda\big|_{\mathcal{A}}=\mu$, we must have $\lambda(N)=0$ and, since $\lambda$ is a complete measure, we get $F\in \mathcal{B}$. Further, by the fact that $\mathcal{B}\supseteq \mathcal{A}$, we get $A\in \mathcal{B}$ as well. Then, we must have $A\cup F \in \mathcal{B}$ since $\sigma$-algebras are closed under finite unions.
+\end{proof}
+
+In essence, the above (hopefully correct) proof tells us that the completion of a measure space gives us the ``smallest'' $\sigma$-algebra that makes it complete. The reason I asked this is, by this claim, it really suffices to show that $\mathcal{M}_{\mu^*}\subseteq \xoverline{\sigma(\mathcal{E})}$ to prove Theorem 8.7 above, since we already know that $\sigma(\mathcal{E})\subseteq \mathcal{M}_{\mu^*}$ by our above claim and that our measures agree on $\sigma(\mathcal{E})$. Lastly, by the uniqueness of the measure completion theorem, we must have $\mu^*\big|_{\mathcal{M}_{\mu^*}} = \overline{\mu\big|_{\sigma(\mathcal{E})}}$.
+
+\begin{proof}[Proof outline of \Cref{thm:PreMeasureComplete}]
+As notice above, it suffices to show that $\mathcal{M}_{\mu^*}\subseteq \xoverline{\sigma(\mathcal{E})}$. Take $A\in \mathcal{M}_{\mu^*}$, we will show that $\exists E_1,E_2\in\sigma(\mathcal{E})$ such that $E_1\subseteq A\subseteq E_2$ and $\mu^*(E_2\setminus E_1)=0$. That is, we can write $A = E_1 \cup (A\setminus E_1)$ with $A\setminus E_1\subseteq E_2\setminus E_1$, which is a null set.
+
+First suppose $\mu^*(A)<\infty$ and get a cover $A\subseteq \bigcup_k F_k^{(n)}$ where each $F_k^{(n)}\in \mathcal{E}$ and
+\[\mu^*(A)\leq \sum_k \mu^*(F_k^{(n)})<\mu^*(A)+\frac1n\implies \mu^*(D_n\setminus A)<\frac1n\]
+where $D_n = \bigcup_k F_k^{(n)}$ (note the use of finite outer measure on $A$). Now, let $D = \bigcap_n D_n$ so that $\mu^*(D\setminus A) = 0$. 
+
+For arbitrary $A$, split it into $A = \bigcup_n (A\cap B_n)$ where each $\mu^*(B_n)<\infty$ and apply the previous result to $(A\cap B_n)$ to get a sequence of $\{F_n\}$ where $\mu^*(F_n\setminus(A\cap B_n)) = 0$. Then observe
+\[\mu^*\left(\bigcup_n F_n\setminus A\right) \leq \mu^* \left(\bigcup_n (F_n\setminus(A\cap B_n)\right)\leq \sum_n \mu^*(F_n\setminus(A\cap B_n)) = 0.\]
+So we get $\bigcup_n F_n = E_2$. To get $E_1$, we repeat the argument for $A^c$.
+\end{proof}
+
+\begin{example}
+Here is a counter-example to \Cref{thm:PreMeasureComplete} if the pre-measure is \emph{not} $\sigma$-finite. Let $X$ be an uncountable set and $\mathcal{E}$ be the countable co-countable $\sigma$-algebra. Let $\mu_0(E)=\infty$ if $X\setminus E$ is countable and $0$ if $E$ is countable (in fact, $\mu_0$ is a measure). Further notice that the measure space is already complete. One can see that, letting $\mu^*$ be the outer measure induced by $\mu_0$, the only sets with finite outer measure are countable sets. Hence, we have $\mathcal{M}_{\mu^*} = \mathcal{P}(X)\neq \mathcal{E}$, where the latter is the completion of $\sigma(\mathcal{E})$.
+\end{example}
+
+\begin{thm}
+Let $E\in \mathcal{L}$, then
+\[m(E) = \inf\{m(U):E\subseteq U,\ U\text{ open}\}= \sup\{m(K):K\subseteq E,\ K\text{ compact}\}.\]
+\end{thm}
+
+\section{Probabilistic Applications}
+We want to consider the infinite coin toss model. Let $\Omega = \{(a_n):a_n\in\{0,1\}\}$ be our sample space, with $0$ corresponding to tails and $1$ corresponding to heads. Say we want to find out the probability that 3 heads appear infinitely many times, so we want such an event to be measurable. For $k\in\N$ and $w_1,\ldots,w_k\in\{0,1\}$, define
+\[[w_1,\ldots,w_k] = \{(a_n):a_i=w_i,\ \forall i\in\{1,\ldots,k\}\}.\]
+Now, let
+\[\mathcal{A} = \{[w_1,\ldots,w_k]:k\geq 1;\ w_1,\ldots,w_k\in\{0,1\}\}.\]
+Observe that $\mathcal{A}$ is a semiring. Further, let $\mu_0:\mathcal{A}\to[0,\infty]$ be a premeasure such that $\mu_0(\emptyset)=0$ and
+\[\mu_0([w_1,\ldots,w_k]) = p^{w_1+\ldots+w_k}q^{k-(w_1+\ldots+w_k)}\]
+where $p+q=1$ and $p,q\in(0,1)$. Further, $\Omega = [0]\cup[1]$, so $\mu_0$ is $\sigma$-finite. So we get a unique measure on $\sigma(\mathcal{A})$, say $\mu$.
+
+\begin{example}
+Every singleton in $\Omega$ is measurable with measure zero.
+\end{example}
+
+\begin{proof}[Proof outline]
+Write $\{(a_n)\} = \bigcap_k [a_1,\ldots,a_k]$, which is a decreasing sequence. So we get
+\[\mu(\{(a_n)\}) = \lim_k \mu([a_1,\ldots,a_k])\leq \lim_k \max(p,q)^k = 0.\]
+\end{proof}
+
+\begin{thm}[Second Borel Cantelli Lemma]
+Let $(\Omega,\mathcal{F},\P)$ and $\{E_n\}\subseteq \mathcal{F}$ such that
+\[\P(E_{n_1}\cap \cdots \cap E_{n_k}) = \prod_{i=1}^k \P(E_{n_i})\]
+for all $k\in\N$ and $n_1<n_2<\ldots<n_k$. If $\sum_n \P(E_n) = \infty$, then
+\[\P\{x\in\Omega:x\in E_n\text{ for infinitely many }n\}=1.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+Observe that $\{x\in\Omega:x\in E_n\text{ for infinitely many }n\} = \bigcap_n\bigcup_{k=n}^\infty E_k$ so we can just show its complement has measure zero:
+\[\P \left(\bigcup_n\bigcap_{k=n}^\infty E_k^c\right) = 0\iff \P \left(\bigcap_{k=n}^\infty E_k^c\right) \ (\forall n).\]
+Let $\varepsilon>0$, then we get
+\[\P \left(\bigcap_{k=n}^\infty E_k^c\right)\leq \P \left(\bigcap_{k=n}^m E_k^c\right) = (1-\P(E_n))\ldots(1-\P(E_m))\leq e^{-\sum_{k=n}^m\P(E_k)}\]
+by our hypothesis and the fact that $1-x\leq e^{-x}$. Since this holds for all $m$, the RHS can be made less than $\varepsilon$ since our sum goes to infinity.
+\end{proof}
+
+\begin{thm}[First Borel Cantelli Lemma]
+Let $(X,\mathcal{A},\mu)$ be a measure space and $\{E_n\}\subseteq \mathcal{A}$ be such that
+\[\sum_n\mu(E_n)<\infty\]
+then $\mu\{x\in X:x\in E_n\text{ for infinitely many }E_n\} = 0$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Apply continuity from above.
+\end{proof}
+
+We want to discuss random variables. Consider our infinite coin toss model and let
+\[\xi(x) = \begin{cases}
+n & x=(a_1,\ldots,a_n,\ldots)\text{ where }a_n=1 \text{ and }a_1=\ldots=a_{n-1}=0 \\
+0 & x = (0,\ldots0,\ldots).
+\end{cases}\]
+Here, $\xi$ captures the epoch of the first success. We want to find the average time of the first success. Observe that
+\[\xi = 0 + 1\chi_{[1]}+2\chi_{[0,1]}+\ldots = \sum_n n\chi_{\underbrace{[0,\ldots,0,1]}_\text{$n$ times}}.\]
+We then have
+\[\int_\Omega \xi = \sum_n n \int_\Omega \chi_{\underbrace{[0,\ldots,0,1]}_\text{$n$ times}} = \sum_n nq^{n-1}p = p \left(\sum_n q^n\right)' = p \left(\frac{q}{1-q}\right)' = \frac1p.\]
+The above is the \emph{expected value} of $\xi$.
+
+\newpage
+\section{Riemann vs Lebesgue Integration}
+\begin{example}
+The function $\chi_{\Q}$ is Riemann integrable but Lebesgue integrable.
+\end{example}
+
+\begin{thm}\label{thm:RiemannLeb}
+Let $f:[a,b]\to\R$ be bounded, then
+\begin{enumerate}
+  \item $f$ is Lebesgue integrable if it's Riemann integrable and
+  \[\int_{[a,b]}f\ \mathrm{d}m = \int_a^b f(x)\ \mathrm{d}x.\]
+  \item $f$ is Riemann integrable if and only if $f$ is $m$-a.e. continuous.
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+This proof is quite technical, the main idea is to write the upper and lower Riemann sums as limits of integrals of simple functions and the rest follows.
+\end{proof}
+
+\begin{thm}
+Let $f_n:[a,b]\to\R$ be Riemann integrable and $f_n\to f$, where $f$ is also Riemann integrable and $\exists M$ such that $\|f_n\|_{[a,b]}\leq M$ for all $n$. Then we have
+\[\int_a^b f(x)\ \mathrm{d}x = \lim_n\int_a^b f_n(x)\ \mathrm{d}x.\]
+\end{thm}
+\begin{proof}[Proof outline]
+This follows from DCT.
+\end{proof}
+
+\begin{remark}
+\Cref{thm:RiemannLeb} does \emph{not} apply to improper integrals. Consider $\left|\frac{\sin x}{x}\right|$.
+\end{remark}
+
+\begin{thm}
+Let $f:[a,\infty)\to\R$ be such that, for all $b\in(a,\infty)$, we have $f\big|_{[a,b]}$ is Riemann integrable, then
+\begin{enumerate}
+  \item $f:[a,\infty)$ is $\mathcal{L}[a,\infty)-\mathcal{B}$ measurable
+  \item If $f(x)\geq 0$ everywhere, then
+  \[\int_{[a,\infty)} f\ \mathrm{d}m = \lim_{b\to\infty}\int_a^b f(x)\ \mathrm{d}x.\]
+  \item If $f$ is Lebesgue integrable then
+  \[\int_a^\infty f(x)\ \mathrm{d}x\]
+  converges and the Lebesgue and Riemann integrals agree.
+\end{enumerate}
+\end{thm}
+\newpage
+
+\section{Product Measures and Fubini's Theorem}
+\begin{definition}
+Let $(X,\mathcal{A},\mu)$ and $(Y,\mathcal{B},\nu)$ be measure spaces and let $\pi_0:\mathcal{A}\times \mathcal{B}\to[0,\infty]$ by $\pi_0(A\times B) = \mu(A)\nu(B)$ be a premeasure on the semiring $\mathcal{A}\times \mathcal{B}$. Let $\mathcal{A}\otimes \mathcal{B} = \sigma(\mathcal{A}\times \mathcal{B})$ and $\pi:\mathcal{A}\otimes \mathcal{B}\to[0,\infty]$ be the measure generated by the measure extension (through the Caratheodory process). Note that this is the only measure that agrees on the semiring $\mathcal{A}\times \mathcal{B}$ if both measure spaces are $\sigma$-finite.
+\end{definition}
+
+\begin{definition}
+For $E\subseteq X\times Y$, we let
+\[E_x = \{y\in Y:(x,y)\in E\}\subseteq Y\qquad E^x = \{x\in X:(x,y)\in E\}\subseteq X\]
+for fixed $x,y$, respectively.
+\end{definition}
+
+\begin{definition}
+Let $f:X\times Y\to[0,\infty]$, we define $f_x(y) = f(x,y)$ and $f^y(x) = f(x,y)$ for fixed $x,y$, respectively.
+\end{definition}
+
+\begin{lemma}
+If $E\in \mathcal{A}\otimes \mathcal{B}$, then $E_x,E^y$ are $\mathcal{B}$ and $\mathcal{A}$ measurable, respectively. If $f\in M^+(X\times Y)$, then $f_x\in M^+(Y)$ and $f_y\in M^+(X)$.
+\end{lemma}
+
+\begin{thm}[Tonelli's Theorem]
+Let $(X,\mathcal{A},\mu)$ and $(Y,\mathcal{B},\nu)$ be $\sigma$-finite measure spaces and $f\in M^+(X,Y)$, then $g(x)\coloneqq \int_Y f_x(y)\ \mathrm{d}\nu(y)\in M^+(X)$ and $h(y)\coloneqq \int_X f_y(x)\ \mathrm{d}\mu(x)\in M^+(Y)$ and we have
+\[\int_{X\times Y} f \ \mathrm{d}(\mu\times\nu) = \int_X g(x)\ \mathrm{d}\mu(x) = \int_Y h(y)\ \mathrm{d}\nu(y).\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+Start with simple functions and the assumption the measure space is \emph{finite}. We use Dynkin's $\pi$-$\lambda$ theorem, we show the that the set on which characteristic functions preserve Tonelli's contains $\mathcal{A}\times \mathcal{B}$ and is a $\lambda$ system, thus it contains $\mathcal{A}\otimes \mathcal{B}$. We then can extend this to $\sigma$-finite spaces by taking a monotonically increasing sequence of rectangles. Then use linearity to extend to simple functions and MCT to extend to general functions.
+\end{proof}
+
+\begin{example}
+The $\sigma$-finite assumption is crucial to Tonelli's. Here's an example of where it fails. Let $X=Y=[0,1]$ and both with the Borel $\sigma$-algebra. Let $\mu$ be the Lebesgue measure on $X$ and $\nu$ be the counting measure on $Y$. The set $\Delta = \{(x,x):x\in[0,1]\}$ has measure $(\mu\times\nu)(\delta) = \infty$ but the iterated integrations yield $0$ and $1$.
+\end{example}
+
+\begin{example}[Gaussian Integration]
+We want to show that $I = \int_0^\infty e^{-x^2}\ \mathrm{d}x = \sqrt{\pi}/2$. Using a change of variables we have
+\[I = \int_0^\infty ue^{-u^2t^2}\ \mathrm{d}t\]
+for all $u>0$ so we have
+\[I^2 = \int Ie^{-u^2}\ \mathrm{d}u = \int_{[0,\infty)}\int_{[0,\infty)}ue^{-(1+t^2)u^2}\ \mathrm{d}m(t)\mathrm{d}m(u).\]
+We apply Tonelli's to switch the order of integration and the rest follows.
+\end{example}
+
+\begin{thm}[Fubini's Theorem]
+Let $(X,\mathcal{A},\mu)$ and $(Y,\mathcal{B},\nu)$ be $\sigma$-finite measure spaces and $f\in L^1(X\times Y)$. Then $\mu$-almost every $x\in X$, we have $\int_Y |f(x,y)|\ \mathrm{d}\nu(y)<\infty$ and setting
+\[
+g(x) = \begin{cases}
+\int_Y f(x,y)\ \mathrm{d}\nu(y) & \int_Y |f(x,y)|\ \mathrm{d}\nu(y)<\infty \\
+0 & \text{else},
+\end{cases}
+\]
+we get
+\[\int_{X\times Y}f(x,y)\ \mathrm{d}(\mu\times\nu) = \int_X g(x)\ \mathrm{d}\mu(x).\]
+\end{thm}
+
+
+\newpage
+
+\part{Complex Analysis}
+
+\section{Preliminaries}
+
+\begin{definition}
+A \emph{region} $\Omega$ is a open, connected subset of $\C$.
+\end{definition}
+
+\begin{definition}
+A function $f:\Omega\to\C$ is called \emph{holomorphic}, denoted $f\in H(\Omega)$, if $f'(z)$ exists and $f':\Omega\to\C$ is continuous.
+\end{definition}
+
+\begin{definition}
+A region $\Omega$ is called \emph{simply connected} if for all $f\in H(\Omega)$, there exists an $F\in H(\Omega)$ such that $F'=f$. That is, a region is simply connected if every holomorphic function has an anti-derivative (or primitive).
+\end{definition}
+
+\begin{definition}
+Let $\varphi:[a,b]\to \C$ be a function where $\varphi = u+iv$, then $\varphi$ is Riemann integrable if $u,v$ are Riemann integrable and we have
+\[\int_a^b \varphi(t)\ \mathrm{d}t = \int_{a}^{b} u(t) \ \mathrm{d}t + i \int_{a}^{b} v(t) \ \mathrm{d}t.\]
+\end{definition}
+
+\begin{definition}
+Let $\gamma:[a,b]\to\C$ be a curve and $f:\wt{\gamma}\to\C$ be a function. We say that $\int_\gamma f(z) \ \mathrm{d}z$ exists and $\int_\gamma f(z) \ \mathrm{d}z=I$ if, for all $\varepsilon>0$, there exists a $\delta>0$ such that for all $P$ partition of $[a,b]$ with $\|P\|<\delta$ and any $\xi_i\in[t_{i-1},t_i]$ in the partition, we have
+\[\left|\sum_{i=1}^nf(\xi_i)\Delta z_i - I\right| < \varepsilon\]
+where $\Delta z_i = \gamma(t_i)-\gamma(t_{i-1})$.
+\end{definition}
+
+\begin{thm}
+Let $\gamma:[a,b]\to\C$ be piecewise continuously differentiable and $f:\wt{\gamma}\to\C$ be continuous, then $\int_\gamma f(z)\ \mathrm{d}z = \int_a^b f(\gamma(t))\gamma'(t)\ \mathrm{d}t$ and
+\[\left|\int_\gamma f(z)\ \mathrm{d}z\right|\leq ML\]
+where $M = \|f\|_{\wt{\gamma}}$ and $L = \int_a^b |\gamma'(t)|\ \mathrm{d}t$.
+\end{thm}
+
+\begin{corollary}
+Let $\gamma:[a,b]\to\C$ be piecewise continuously differentiable and $f_n:\wt{\gamma}\to \C$ converge uniformly to $f:\wt{\gamma}\to\C$, where all functions are continuous. We then have
+\[\int_\gamma f(z)\ \mathrm{d}z = \lim_n \int_\gamma f_n(z)\ \mathrm{d}z.\]
+\end{corollary}
+
+\begin{example}
+Consider the integral
+\[\int_C \frac{\mathrm{d}z}{(z-a)^n} = \begin{cases}
+2\pi i & n=1 \\
+0& \text{else},
+\end{cases}\]
+where $C = a+re^{it}$ for $t\in[0,2\pi]$ is the circle of radius $r$ around the point $a\in\C$.
+\end{example}
+
+\begin{proposition}
+Let $f\in H(\Omega)$ be such that $F'=f$ for some $F\in H(\Omega)$ and let $\gamma$ be a piecewise continuous differentiable closed curve in $\Omega$, then we have $\int_\gamma f(z)\ \mathrm{d}z = 0$.
+\end{proposition}
+
+\begin{proof}[Proof outline]
+We have
+\[\int_\gamma f(z)\ \mathrm{d}z = \int_a^b f(\gamma(t))\gamma'(t)\ \mathrm{d}t = \int_a^b F'(\gamma(t))\gamma'(t)\ \mathrm{d}t = F(\gamma(b)) - F(\gamma(a)) = 0\]
+by the Chain Rule and an application of the Fundamental Theorem of Calculus.
+\end{proof}
+
+\begin{proposition}
+Let $\Omega\subseteq \C$ be a region and $\gamma:[a,b]\to\Omega$ be a piecewise continuous differentiable curve. Writing $\gamma(t) = x(t)+iy(t)$ and $f(z) = u(x,y)+iv(x,y)$ where $z=x+iy$, we have
+\[\int_\gamma f(z)\ \mathrm{d}z = \int_\gamma u\ \mathrm{d}x - v\ \mathrm{d}y + i \left(\int_\gamma u\ \mathrm{d}y + v\ \mathrm{d}x\right).\]
+\end{proposition}
+
+\section{Cauchy's Theorems}
+
+\begin{thm}[Cauchy's Theorem]
+Let $\gamma$ be a Jordan curve in $\Omega$ such that the interior domain of $\gamma$ is simple and contained in $\Omega$, then we have $\int_\gamma f(z)\ \mathrm{d}z = 0$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Applying Green's Theorem and Cauchy-Riemann equations, we have
+\[\int_\gamma f\ \mathrm{d}z = \int_\gamma u\ \mathrm{d}x - v\ \mathrm{d}y + i \left(\int_\gamma u\ \mathrm{d}y + v\ \mathrm{d}x\right) = -\int\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y} + i \int \frac{\partial u}{\partial x}-\frac{\partial v}{\partial y} = 0.\qedhere\]
+\end{proof}
+
+
+\begin{thm}[Cauchy's Integral Formula]
+Suppose $\xoverline{D}(a,r)\subseteq \Omega$, then for all $z\in D(a,r)$, we have
+\[f(z) = \frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{\zeta-z}\ \mathrm{d}\zeta.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+First, split the integral over $\partial D(a,r)$ to many simple regions that contain a portion of the disc centered around $z$ with radius $\varepsilon$. Successive applications of Cauchy's Theorem gives us
+\[\oint_{\partial D(a,r)}\frac{f(\zeta)}{\zeta-z}\ \mathrm{d}\zeta - \oint_{\partial D(z,\varepsilon)}\frac{f(\zeta)}{\zeta-z}\ \mathrm{d}\zeta = 0\]
+where $z\in D(z,\varepsilon)\subseteq \Omega$. Then consider the following
+\[\frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{\zeta-z}\ \mathrm{d}\zeta = \frac{1}{2\pi i} \oint_{\partial D(z,\varepsilon)} \frac{f(\zeta)-f(z)}{\zeta-z} + \frac{f(z)}{\zeta-z}\ \mathrm{d}\zeta.\]
+Since $f(z)$ is constant with respect to $\zeta$ and, by previous example, we can get
+\[\left|f(z) - \frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{\zeta-z}\ \mathrm{d}\zeta\right| \leq \frac{1}{2\pi}\oint_{\partial D(z,\varepsilon)} \left| \frac{f(\zeta)-f(z)}{\zeta-z}\right|\ \mathrm{d}\zeta.\]
+Taking $\varepsilon\to 0$ and noting the integrand of the RHS is bounded due to $f\in H(\Omega)$ completes the proof.
+\end{proof}
+
+
+\begin{thm}[Cauchy's Expansion Theorem]
+Suppose $\xoverline{D}(a,r)\subseteq \Omega$, then for all $z\in D(a,r)$, we have
+\[f(z) = \sum_{n=0}^\infty \left[\frac{1}{2\pi i}\oint_{\partial D(a,r)} \frac{f(\zeta)}{(\zeta-a)^{n+1}}\ \mathrm{d}\zeta\right](z-a)^n.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+Consider
+\begin{align*}
+f(z) & = \frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{\zeta-z}\ \mathrm{d}\zeta \\
+& = \frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{\zeta-a-(z-a)}\ \mathrm{d}\zeta \\
+& = \frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{1-\frac{z-a}{\zeta-a}} \frac{1}{\zeta-a}\ \mathrm{d}\zeta \\
+& = \frac{1}{2\pi i} \oint_{\partial D(a,r)} \frac{f(\zeta)}{\zeta-a}\sum_{n=0}^\infty \left(\frac{z-a}{\zeta-a}\right)^n\ \mathrm{d}\zeta \\
+& = \sum_{n=0}^\infty \left[\frac{1}{2\pi i}\oint_{\partial D(a,r)} \frac{f(\zeta)}{(\zeta-a)^{n+1}}\ \mathrm{d}\zeta\right](z-a)^n.\qedhere
+\end{align*}
+\end{proof}
+
+So, every holomorphic function has a power series expansion
+\[f(z) = \sum_{n=0}^\infty c_n(z-a)^n\text{ where }c_n=\frac{1}{2\pi i}\oint_{\partial D(a,r)} \frac{f(\zeta)}{(\zeta-a)^{n+1}}\ \mathrm{d}\zeta.\]
+Given this, we have the following conclusions:
+
+\begin{corollary}
+If $f\in H(\Omega)$, then $f$ is infinitely differentiable. Further, if $f\in H(\Omega)$, then $f'\in H(\Omega)$ as well.
+\end{corollary}
+
+\begin{thm}
+Suppose $\xoverline{D}(a,r)\subseteq \Omega$, then
+\[f^{(n)}(a) = \frac{n!}{2\pi i}\oint_{\partial D(a,r)} \frac{f(\zeta)}{(\zeta-a)^{n+1}}\ \mathrm{d}\zeta\qquad\text{ and }\qquad|f^{(n)}(a)|\leq \frac{n!}{r^n}\|f\|_{\partial D(a,r)}.\]
+\end{thm}
+
+\begin{proof}[Proof outline]
+The first conclusion comes from writing out $f^{(n)}(a)$ with its power series expansion and the second conclusion follows from the ML inequality.
+\end{proof}
+
+\begin{definition}
+A function $f\in H(\C)$ is called an \emph{entire} function.
+\end{definition}
+
+\begin{thm}[Liouville's Theorem]
+Each bounded entire function is constant.
+\end{thm}
+
+\begin{proof}[Proof outline]
+We take the power series expansion around $0$ with radius $R$ for $R>|z|$ and, for each $z\in\C$, we have $f(z) = \sum_{n=0}^\infty c_n z^n$ where $f^{(n)}(0) = k!c_k$. Hence, it suffices to show for $k\geq 1$, we have $f^{(k)}(0) = 0$. Let $M = \|f\|_{\C}$ and we have
+\[|f^{(k)}(0)|\leq \frac{k!}{R^k}M\]
+and taking $R\to\infty$ completes the proof.
+\end{proof}
+
+\begin{thm}[Morera's Theorem]
+Suppose $f$ is continuous in $\Omega$ and $\oint_{\partial \Delta}f\ \mathrm{d}z = 0$ for every closed solid triangle $\Delta$ contained in $\Omega$, then $f\in H(\Omega)$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Since continuity is a local property, it suffices to show that for every $z_0\in\Omega$ and $D(z_0,r)\subseteq \Omega$, we have $f$ has a continuous derivative in $D(z_0,r)$. We define $F:D(z_0,r)\to\C$ by
+\[F(z) = \int_{[z_0,z]}f(\zeta)\ \mathrm{d}\zeta.\]
+Once we show $F'(z)=f(z)$, we then have $F\in H(D(z_0,r))$, which implies that $f\in H(\Omega)$. To show this, first notice
+\[\frac{F(z+h)-F(z)}{h} = \frac{1}{h}\int_z^{z+h}f(\zeta)\ \mathrm{d}\zeta\]
+by applying the hypothesis of $\oint_{\partial \Delta}f\ \mathrm{d}z = 0$ to the triangle of the points $\{z_0,z,z+h\}$. We then have
+\[\left|\frac{F(z+h)-F(z)}{h}-f(z)\right|\leq \frac{1}{|h|}\int_z^{z+h} |f(\zeta)-f(z)|\ \mathrm{d}\zeta \leq \|f(\zeta)-f(z)\|_{[z,z+h]} < \varepsilon\]
+for sufficiently small $h$ by the continuity of $f$.
+\end{proof}
+
+\begin{definition}
+Let $\Omega\subseteq \C$ be open, we say that $f_n:\Omega\to\C$ converges compactly to $f:\Omega\to\C$ if, for all compact sets $K\subseteq \Omega$, we have $f_n$ converges to $f$ uniformly on $K$.
+\end{definition}
+
+\begin{thm}
+Let $\{f_n\}\subseteq H(\Omega)$ converge compactly to $f$, then $f\in H(\Omega)$ and, for all $k\in\N$, we have $f_n^{(k)}(z)\to f^{(k)}(z)$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+For the first result, check that $f$ is continuous (a local property) and the compact convergence over the boundary of a triangle allows us to interchange the limit and integration. Applying Morera's Theorem completes the proof of the first result.
+
+For the second result, we apply Cauchy's Estimate to get
+\[|(f_n-f)^{(k)}(a)|\leq \frac{k!}{r^k}\|f_n-f\|_{\partial D(a,r)}.\qedhere\]
+\end{proof}
+
+\begin{definition}
+We call an open $\Omega\subseteq \C$ a star domain if there exists $z\in\Omega$ such that, for all $w\in \Omega$, we have $[z,w]\subseteq \Omega$. In this case, $z$ is the star center of $\Omega$.
+\end{definition}
+
+\begin{thm}
+Each star domain $\Omega\subseteq \C$ is simply connected.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Let $F(z) = \int_{[a,z]}f\ \mathrm{d}z$ where $a\in\Omega$ is the star center. Mimic the proof of Morera's Theorem to show that $F'(z)=f(z)$.
+\end{proof}
+
+\begin{thm}[Stronger Version of Cauchy's Expansion Theorem]
+Suppose $D(a,r)\subseteq \Omega$, then for all $z\in D(a,r)$, we have
+\[f(z) = \sum_{n=0}^\infty \left[\frac{1}{2\pi i}\oint_{\partial D(a,r)} \frac{f(\zeta)}{(\zeta-a)^{n+1}}\ \mathrm{d}\zeta\right](z-a)^n = \sum_{n=0}^\infty \frac{f^{(n)}(a)}{n!}(z-a)^n.\]
+\end{thm}
+
+\section{Zeros of Holomorphic Functions}
+\begin{thm}\label{thm:ZeroDisc}
+Suppose $f\in H(\Omega)$ and $D(a,r)\subseteq \Omega$ and $f(a) = 0$, then either
+\begin{enumerate}
+	\item $f\equiv 0$ on $D(a,r)$
+	\item There exists $r'\in(0,r)$ such that $f(z)\ne 0$ for all $z\in D(a,r')\setminus\{a\}$.
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+Note that $f(z) = \sum_{n=1}^\infty c_n(z-a)^n$ since $f(a)=0\implies c_0=0$. Suppose $c_n\ne 0$ for some $n$, then
+\[f(z) = (z-a)^n [c_n+c_{n+1}(z-a)+\ldots].\]
+Now, the first term is equal to zero if and only if $z=a$ and the second term is a continuous function of $z$ which is $\ne 0$ at $z=a$, so there's some $r'$ upon which the second term is $\ne 0$, which gives the latter scenario in our theorem.
+\end{proof}
+
+\begin{thm}\label{thm:ZeroAccumulate}
+Let $\Omega\subseteq \C$ be a region and let $Z = \{a\in \Omega:f(a) = 0\}$, then $Z'\cap \Omega$ is either $\emptyset$ or $\Omega$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Suppose $Z'\cap \Omega\ne\emptyset$, we will show that $f(z) = 0$ for all $z\in\Omega$. Let $u\in Z'\cap \Omega$ and $v\in \Omega$ and $\gamma:[0,1]\to\Omega$ be a curve such that $\gamma(0)=u$ and $\gamma(1)=v$. Let $S = \{t\in[0,1]:\gamma(t)\in Z'\cap \Omega\}$ and $x=\sup S$. First notice that $x\in S$ because we can find a sequence $t_n\to x$ where each $\gamma(t_n)$ is an accumulated zero, hence $x$ is also an accumulated zero. On the other hand, we have $x=1$ because $f(\gamma(x)) = 0$ and we can apply \Cref{thm:ZeroDisc} to get a contradiction otherwise. Hence, we have $f(v)=0$ as well.
+\end{proof}
+
+\begin{corollary}
+Let $\Omega\subseteq \C$ be a region and $E\subseteq \Omega$ where $E'\cap \Omega\ne\emptyset$. If $f,g\in H(\Omega)$ such that $f(z)=g(z)$ for all $z\in E$, then $f(z)=g(z)$ for all $z\in \Omega$.
+\end{corollary}
+
+\begin{corollary}
+Let $\Omega\subseteq \C$ be a region and $f'(z) = 0$ for all $z\in\Omega$, then $f$ is constant.
+\end{corollary}
+
+\begin{proof}[Proof outline]
+Take $z_0\in \Omega$ and notice that $f(z)=f(z_0)$ on $D(z_0,r)\subseteq \Omega$. Let $g(z) = f(z)-f(z_0)$ and, since $D(z_0,r)$ accumulates in $\Omega$, we can apply \Cref{thm:ZeroAccumulate} to complete the proof.
+\end{proof}
+
+\begin{corollary}
+For all $z\in \C$, we have $\sin^2(z)+\cos^2(z) = 1$.
+\end{corollary}
+
+\begin{thm}
+Let $\Omega_1$ and $\Omega_2$ be simply connected domains in $\C$. If $\Omega_1\cap \Omega_2$ is non-empty and connected, then $\Omega_1\cup\Omega_2$ is also simply connected.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Let $F_1$ and $F_2$ be the anti-derivatives of $f$ restricted on $\Omega_1$ and $\Omega_2$, respectively. Then, as $(F_1-F_2)'\equiv 0$ on $\Omega_1\cap \Omega_2$, we get $F_1(z) = F_2(z)+c$ for all $z\in \Omega_1\cap \Omega_2$ and some $c\in\C$. The function
+\[F(z) = \begin{cases}
+F_1(z) & z\in \Omega_1 \\
+F_2(z)+c & z\in \Omega_2
+\end{cases}\]
+is well-defined and we can routinely verify that $F\in H(\Omega_1\cup \Omega_2)$ and $F'(z)=f(z)$.
+\end{proof}
+
+\begin{definition}
+We define $\Log:\C\setminus(-\infty,0]\to \C$ to be the unique anti-derivative of $\frac1z$ such that $\Log(1)=0$.
+\end{definition}
+
+Note that we can write $\Log(z)$ in the open disc around $1$ of radius $1$ by the following power series expansion:
+\[\Log(z) = \sum_{n=1}^\infty (-1)^{n-1}\frac{(z-1)^n}{n}.\]
+
+\section{Properties of Singularities and Residue Theorem}
+\begin{thm}\label{thm:RemovableTFAE}
+Let $f\in H(\dot{D}(a,r))$, then TFAE
+\begin{enumerate}
+	\item $f$ is bounded in $\dot{D}(a,\delta)$ for some $\delta\in(0,r)$
+	\item There exists $\wt{f}\in H(D(a,r))$ such that $\wt{f}\vert_{\dot{D}(a,r))}=f$
+	\item $\lim_{z\to a}f(z)\in\C$.
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+We prove $(b)\implies(c)\implies(a)\implies(b)$. The first two implications are trivial. For $(a)\implies (b)$, consider the function
+\[g(z) = \begin{cases}
+(z-a)^2f(z) & z\ne a \\
+0 & z=a.
+\end{cases}\]
+We can show that $g\in H(D(a,r))$ and that
+\[g'(z) = \begin{cases}
+2(z-a)f(z)+(z-a)^2f'(z)& z\ne a \\
+0 & z=a.
+\end{cases}\]
+Now, we have
+\[g(z) = \sum_{n=0}^\infty c_n(z-a)^n\]
+for $z\in D(a,r)$. Now, $c_0=c_1=0$ because $g(a)=g'(a)=0$, so for $z\ne a$, we have
+\[f(z) = \sum_{n=2}^\infty c_n(z-a)^{n-2}.\]
+Defining
+\[\wt{f}(z) = \begin{cases}
+f(z) & z\ne a\\
+c_2 & z=a
+\end{cases}\]
+completes the proof.
+\end{proof}
+
+\begin{definition}
+Let $f\in H(\Omega)$ and $a\in\Omega$ be an isolated zero of $f$. Then $f(z) = (z-a)^mg(z)$ for all $z\in D(a,r)\subseteq\Omega$ where $a$ is the isolated zero and such that $g(a)\ne 0$. In this case, we say that $f$ has a zero of order $m$ at $a\in \Omega$, which is equivalent to say that $f(a)=f'(a) = \ldots = f^{(m-1)}(a)=0$ but $f^{(m)}(a)\ne 0$.
+\end{definition}
+
+\begin{definition}
+If $a\in\C$ is such that there exists some $r>0$ such that $f\in H(\dot{D}(a,r))$, then we call $a$ an isolated singularity of $f$.
+\end{definition}
+
+\begin{definition}
+We say that an isolated singularity $a\in\C$ is a \emph{removable singularity} of $f$ if $f\vert_{\dot{D}(a,r)}$ is bounded for some $r>0$. Note the equivalent conditions given in \Cref{thm:RemovableTFAE}.
+\end{definition}
+
+\begin{thm}
+Suppose that $f\in H(\dot{D}(a,r))$, then exactly one of the following conditions will hold:
+\begin{enumerate}
+	\item $f$ has a removable singularity at $a$
+	\item $\exists m\in \N$ and $c_m,c_{m-1},\ldots,c_1\in\C$ with $c_m=\ne 0$ such that $f(z) - \sum_{k=1}^m \frac{c_k}{(z-a)^k}$ has a removable singularity at $a$ (that is, $a$ is a pole of $f$)
+	\item $f(\dot{D}(a,r))$ is dense in $\C$ (that is, $a$ is an essential singularity of $f$).
+\end{enumerate}
+\end{thm}
+
+\begin{proposition}
+Let $f\in H(\dot{D}(a,r))$, then
+\begin{enumerate}
+	\item $a$ is removable if and only if $\lim_{z\to a}f(z)\in \C$
+	\item $a$ is a pole if and only if $\lim_{z\to a}|f(z)| = \infty$
+	\item $a$ is essential if and only if $\lim_{z\to a}f(z)$ does not exist.
+\end{enumerate}
+\end{proposition}
+
+\begin{definition}
+We say a function $f$ is meromorphic in $\Omega$ if there exists $A\subseteq \Omega$ such that $A'\cap \Omega=\emptyset$, $f\in H(\Omega\setminus A)$, and $f$ does not have essential singularities in each $a\in A$.
+\end{definition}
+
+\begin{proposition}
+Let $g,h$ be holomorphic functions in $\Omega$ with the function $h$ being non-constantly $0$, then the function $g/h$ is meromorphic in $\Omega$.
+\end{proposition}
+
+Now, recall that $a\in \C$ is a pole of $f$ when we can write
+\[f(z) = \frac{c_m}{(z-a)^m}+ \cdots + \frac{c_1}{(z-a)}+h(z) = Q(z)+h(z)\]
+where $h\in H(D(a,r))$. We call $Q(z)$ the \emph{principal part} of $f$ at $a$ and $c_1$
+ the residue of $f$.
+
+\begin{thm}[Residue Theorem]
+Suppose $f$ is meromorphic in $\Omega$ and $A\subseteq \Omega$ is the set of poles of $f$. Let $\gamma$ be a Jordan curve in $\Omega\setminus A$ whose interior $D$ is simple and $D\subseteq \Omega$, then we have
+\[\frac{1}{2\pi i}\oint_\gamma f(z)\ \mathrm{d}z = \sum_{a\in A}\Res(f;a)\Ind_\gamma(a)\]
+where $\Ind_\gamma$ is the indicator for the set $D$, the interior of $\gamma$.
+\end{thm}
+
+Note that the RHS is the a finite sum because $\Ind_\gamma(a)=0$ for all but finitely many $a$ because $D\cup \wt{\gamma}$ is compact and we know that $A$ cannot accumulate in $\Omega$.
+
+\begin{proof}[Proof outline]
+Let the set $A\cap D = B = \{a_1,\ldots,a_n\}$ and $Q_1,\dots,Q_n$ be their principal parts, respectively. Then, the function $g = f-(Q_1+\dots+Q_n)$ has a holomorphic extension $\wt{g}\in H(\Omega\setminus(A\setminus B))$. Applying Cauchy's Theorem and noticing that $g=\wt{g}$ on $\gamma$, we have $\oint_\gamma g(z)\ \mathrm{d}z = 0$. Thus, we get
+\[\oint_\gamma f\ \mathrm{d}z = \sum_{k=1}^n \oint_\gamma Q_k\ \mathrm{d}z = 2\pi i \sum_{k=1}^n \Res(f; a_k).\qedhere\]
+\end{proof}
+
+\begin{thm}[Counting Theorem]
+Let $\gamma$ be a Jordan curve in $\Omega$ whose interior $D$ is simple and $D\subseteq \Omega$. Let $f\in H(\Omega)$ and $N_f$ be the number of zeros of $f$ in $D$ counted with multiplicities (that is, every zero of order $m$ is counted ``m'' times). Suppose $f$ has no zeros over $\wt{\gamma}$, then $N_f = \frac{1}{2\pi i}\oint_\gamma \frac{f'(z)}{f(z)}\ \mathrm{d}z$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+First, each pole of $f'(z)/f(z)$ comes from a zero of $f$. Suppose $f$ has an order $m$ zero at $a$, then we have $f(z) = (z-a)^mh(z)$ on $D(a,r)$ where $h\in H(D(a,r))$ and $h(a)\ne 0$. We then have
+\[\frac{f'(z)}{f(z)} = \frac{m}{z-a} + \frac{h'(z)}{h(z)}\]
+where $h'(z)/h(z)\in H(D(a,r))$. So, \emph{every order $m$ zero of $f$ becomes an order $1$ pole of $f'(z)/f(z)$ which has residue $m$!} Applying Residue's Theorem completes the proof.
+\end{proof}
+
+\begin{thm}[Rouche's Theorem]
+Let $\gamma$ be a Jordan curve in $\Omega$ whose interior $D$ is simple and $D\subseteq \Omega$. Let $f,g\in H(\Omega)$ and suppose that $|g(z)|<|f(z)|$ for all $z\in\wt{\gamma}$, then $N_f = N_{f+g}$.
+\end{thm}
+
+\begin{example}
+Let $p(z) = z^6 + 9z^4+1$, then if $\wt{\gamma}$ is the boundary of the disc $|z|=1$, we can let $f(z)=9z^4$ and $g(z) = z^6+1$ and get $N_f = N_p = 4$. On the other hand, if $\wt{\gamma}$ is the boundary of the disc $|z|=4$, we have $f(z) = z^6$ and $g(z) = 9z^4$ and get $N_f= N_p = 6$.
+\end{example}
+
+\begin{thm}[Fundamental Theorem of Algebra]
+Let $p(z)$ be a polynomial $p(z) = a_nz^n + \ldots + a_0$. Then $p(z)$ has exactly $n$ roots in $\C$, counting multiplicities.
+\end{thm}
+
+\begin{proof}[Proof outline]
+We first show that, for $M = \max\left\{\frac{|a_{n-1}+\dots+a_0|}{|a_n|},1\right\}$, we have
+\[|p(z)-a_nz^n|<|a_nz^n|\]
+for all $|z|>M$. Letting $\wt{\gamma}$ be the circle with $|z|=M+1$ and apply Rouche's Theorem, notice that $p(z)\ne 0$ for $|z|>M$ so we indeed have all the zeros in $\C$.
+\end{proof}
+
+\section{Towards Riemann Mapping Theorem}
+
+\begin{thm}[Hurwitz's Theorem]
+Let $\Omega$ be a region and $\{f_n\}\subseteq H(\Omega)$ be a sequence that converges compactly to $f$. If $f$ is not constant and $f(z_0) = 0$, then for all $r>0$ with $D(z_0,r)\subseteq \Omega$, there exists $N\in\N$ such that for all $n\geq N$, $f_n$ has a zero in $D(z_0,r)$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+First, $f\in H(\Omega)$ by Morera's Theorem. Since $f$ is non-constant, we have some $\rho\in(0,r)$ such that $f(z)\ne 0$ for all $z\in \dot{\xoverline{D}}(z_0,\rho)$. Then $\varepsilon = \inf_{\partial D(z_0,\rho)}|f(z)|>0$ by compactness. By compact convergence, we have that there exists $N\in\N$ such that for all $n\geq N$. we get $|f_n(z)-f(z)|<\varepsilon$ for all $z\in \partial D(z_0,\rho)$. We can apply Rouche's Theorem to $f_n = f + (f_n-f)$ and get $N_f = N_{f_n}$, which completes our proof.
+\end{proof}
+
+\begin{corollary}
+Suppose $\{f_n\}\subseteq H(\Omega)$ is a sequence of injective holomorphic functions converging compactly to $f$, then $f$ is either injective or constant.
+\end{corollary}
+
+\begin{proof}[Proof outline]
+Suppose $f(z_1) = f(z_2)$ for some $z_1\ne z_2$ and $f$ is non-constant. Let $g_n(z) = f_n(z)-f_n(z_2)$ and $g(z) = f(z)-f(z_2)$. Then $g_n$ converges compactly to $g$ and $g(z_1)=g(z_2) = 0$ and $g$ is non-constant. Take $\delta_1,\delta_2>0$ small so that $D(z_1,\delta_1)$ and $D(z_2,\delta_2)$ are disjoint. Now, by Hurwitz's Theorem, there exists $N$ such that for all $n\geq N$, we get $g_n(z')=0$ and $g_n(z'') = 0$ for $z'\in D(z_1,\delta_1)$ and $z''\in D(z_2,\delta_2)$. However, this means $f_n(z')=f_n(z_2)=f_n(z'')$, which is a contradiction.
+\end{proof}
+
+\begin{thm}[Open Mapping Theorem]
+Let $\Omega\subseteq \C$ be a region and $f\in H(\Omega)$ where $f$ is non-constant, then $f(\Omega)$ is also a region.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Connectedness is straightforward. We now show $f(\Omega)$ is open. Let $w_0\in f(\Omega)$ and take $z_0\in \Omega$ such that $f(z_0)=w_0$. Now, each zero of $g(z) = f(z)-w_0$ is isolated and let $\delta>0$ such that $D(z_0,\delta)\subseteq \Omega$ and $f(z)\ne w_0$ for all $|z-z_0|=\delta$. So, let $\varepsilon = \inf_{|z-z_0|=\delta} |f(z)-w_0| > 0$. Let $w\in D(w_0,\varepsilon)$, then we have
+\[|w-w_0|<\varepsilon\leq |f(z)-w_0|\]
+for all $|z-z_0|=\delta$. Further, $f(z)-w = f(z)-w_0 + w_0-w$ and applying Rouche's gives us that there exists $z\in D(z_0,\delta)$ such that $f(z)-w = 0$, and hence $w\in f(\Omega)$, which completes the proof.
+\end{proof}
+
+\begin{example}
+Let $f\in H(\Omega)$, then if $\Re f$ is constant, then $f$ is constant. If $|f|$ is constant, then $f$ is also constant.
+\end{example}
+
+\begin{thm}[Maximum Modulus Principal]
+Let $f\in H(\Omega)$ be non-constant and $D(z,\delta)\subseteq \Omega$, then there exists $z_1\in D(z,\delta)$ such that $|f(z)|<|f(z_1)|$.
+\end{thm}
+
+\begin{corollary}
+Let $\Omega$ be a bounded region in $\C$ and $f:\xoverline{\Omega}\to\C$ be such that $f\vert_{\Omega}\in H(\Omega)$, the $|f|$ attains its maximum in $\partial \Omega$.
+\end{corollary}
+
+\begin{thm}
+Let $U,V$ be regions and $f:U\to V$ be a bijective holomorphic map, then its inverse, $g:V\to U$, is also holomorphic and $f'(z)\ne 0$ for all $z\in U$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Note that it suffices to show that $g$ is holomorphic since $g'(f(z))f'(z)=1$ by the chain rule. First, $g$ is continuous by the open mapping theorem. Let $Z = \{z\in U:f'(z) = 0\}$ and, since $Z'\cap U = \emptyset$, we get $f(Z)'\cap V = \emptyset$. Now, let $a\in U\setminus Z$, we have $g$ is differentiable at $w=f(a)$ and that $g'(w) = \frac{1}{f'(g(w))}$. This gives us $g\vert_{V\setminus f(Z)}$ is holomorphic over $V\setminus f(Z)$ and each point in $f(Z)$ is a removable singularity because $g$ is continuous.
+\end{proof}
+
+\begin{thm}[Schwarz's Lemma]
+Denote $D\coloneqq D(0,1)$. Let $f\in H(D)$ and $\|f\|\leq 1$ and $f(0) = 0$, then for all $z\in D$, we have $|f(z)|\leq |z|$ and $|f'(0)|\leq 1$. Moreover, if equality holds for some $z\in D\setminus\{0\}$ for the first inequality or holds in the second inequality, we have $f(z) = \lambda z$ where $\lambda\in\C$ with $|\lambda|=1$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Consider $g(z) = f(z)/z$ which is holomorphic on $z\in D\setminus\{0\}$. Since $f(0) = 0$, we have $c_0 = 0$ in the power series expansion and thus $g(z) = \sum_{n=1}^\infty c_nz^{n-1}$ and hence $g\in H(D)$ (has a holomorphic extension). Now, let $z\in D$ such that $|z|<r<1$, so we have $z\in D(0,r)$, which gives us
+\[|g(z)| = \left|\frac{f(z)}{z}\right|\leq \frac1r\]
+since $\left|\frac{f(z)}{z}\right|$ attains its maximum on the boundary and $\|f\|\leq 1$. Taking $r\to 1$ completes the proof. Further, $|f'(0)| = |g(0)| \leq 1$. If equality holds in either case, then $g$ attains a max in the interior, which implies its constant at some $\lambda$ with modulus $1$.
+\end{proof}
+
+\begin{definition}
+For $\alpha\in D$, let $\varphi_\alpha = \frac{\alpha-z}{1-\bar{\alpha}D}$, note that $\varphi_\alpha\in H(D)$.
+\end{definition}
+
+\begin{proposition}
+The function $\varphi_\alpha$ is a bijection with itself as its inverse, and $\varphi_\alpha(z) = 0 \iff x=\alpha$.
+\end{proposition}
+
+\begin{thm}
+Let $f:D\to D$ be a biholomorphic function and $\alpha\in D$ such that $f(\alpha) = 0$. Then $f(z) = \lambda\varphi_\alpha(z)$ for all $z\in D$ and some $\lambda\in\C$ with $|\lambda| = 1$.
+\end{thm}
+
+\begin{proof}[Proof outline]
+Let $g = f\circ\varphi_\alpha$ and apply the previous theorem to both $g$ and $g^{-1}$.
+\end{proof}
+
+\begin{lemma}
+Let $\Omega$ be a region, then there exists a sequence of compact sets $\{E_n\}\subseteq \mathcal{P}(\Omega)$ such that
+\begin{enumerate}
+  \item $\Omega = \bigcup_n E_n$
+  \item $E_{n+1}\subseteq \mathrm{Int}(E_n)$
+  \item Each compact $E \subseteq \Omega$ is contained in $E_k$ for some $k$.
+\end{enumerate}
+\end{lemma}
+
+The sequence of compact sets described above is an \emph{exhaustion} of $\Omega$.
+
+\begin{definition}
+Let $\Omega$ be a region and $\{E_n\}\subseteq \mathcal{P}(\Omega)$ be a compact exhaustion. For $f,g\in H(\Omega)$, we define
+\[\rho(f,g) = \sum_k \frac{\|f-g\|_{E_k}}{1+\|f-g\|_{E_k}}\frac{1}{2^k}.\]
+\end{definition}
+
+\begin{proposition}
+Convergence in the above $\rho$ metric is equivalent to compact convergence.
+\end{proposition}
+
+Note that $H(\Omega)$ is a closed subset of $(C(\Omega),\rho)$ since compact convergence preserves holomorphicity.
+
+\begin{definition}
+A family of continuous functions $\mathcal{F}\subseteq C(\Omega)$ is \emph{normal} if $\bar{F}$ is compact in $C(\Omega)$. That is, every sequence in $\mathcal{F}$ has a subsequence that converges compactly, even though the limit might not be in $\mathcal{F}$.
+\end{definition}
+
+\begin{definition}
+Let $\mathcal{F}\subseteq C(\Omega)$ and $X\subseteq \Omega$, we say that $\mathcal{F}$ is
+\begin{enumerate}
+  \item pointwise bounded if, for all $x\in X$, the set $\{f(x):f\in \mathcal{F}\}$ is bounded in $\C$
+  \item equicontinuous if for all $\varepsilon>0$, there exists $\delta>0$ such that $\forall f\in \mathcal{F}$ and $x,y$ with $|x-y|<\delta$, we have $|f(x)-f(y)|<\varepsilon$. 
+\end{enumerate}
+Note that equicontinuous implies uniform continuity in each $f\in \mathcal{F}$ but is much stronger.
+\end{definition}
+
+\begin{thm}[Arzela-Ascoli Theorem]
+Let $\mathcal{F}\subseteq C(\Omega)$ be pointwise bounded on $\Omega$ and equicontinuous for all compact $E\subseteq \Omega$, then $\mathcal{F}$ is normal.
+\end{thm}
+
+\begin{thm}[Montel's Theorem]
+Suppose $\mathcal{F}\subseteq H(\Omega)$ is uniformly bounded on each compact $E\subseteq \Omega$, then $\mathcal{F}$ is normal.
+\end{thm}
+
+\begin{thm}
+Let $\Omega\subseteq \C$ be simply connected and $f(z)\in H(\Omega)$ such that $f(z)\ne 0$ for all $z\in\Omega$, then
+\begin{enumerate}
+  \item $f(z) = e^{g(z)}$ for some $g\in H(\Omega)$
+  \item $f(z) = h^2(z)$ for some $h\in H(\Omega)$
+\end{enumerate}
+\end{thm}
+
+\begin{proof}[Proof outline]
+Note that it's sufficient to prove 1 and let $h(z) = e^{g(z)/2}$. Now, let $g\in H(\Omega)$ be such that $g' = f'/f$. Then
+\[(fe^{-g})' = e^{-g}(f'-g'f) = 0\implies fe^{-g} = c.\]
+So just fix $z_0\in \C$ and choose $g$ such that $c = 1$ in the above equation because any function of the form $g+a$ for $a\in\C$ also works.
+\end{proof}
+
+\begin{thm}
+Let $\Omega \subsetneq\C$ be non-empty simply connected, then there exists $f:\Omega\to D$ a biholomorphic map.
+\end{thm}
+
+\section{Biholomorphic Maps and Integration Techniques}
+
+\begin{definition}
+Let $\Omega \subseteq \C$ be simply connected and $0\notin\Omega$ and $F\in H(\Omega)$ where $e^{F(z)} = z$ for all $z\in\Omega$. Then $F$ is called a branch of the logarithmic function on $\Omega$.
+\end{definition}
+
+\begin{remark}
+$F(z)$ exists as $z$ does not have a zero on $\Omega$. If $F\in H(\Omega)$ is a branch, then so is $F(z) + 2\pi in$ for all $n\in\mathbb{Z}$.
+\end{remark}
+
+\begin{example}
+Let $\Omega = \C\setminus (-\infty,0]$ and recall we defined $\Log(z)$ to be the anti-derivative of $\frac1z$ such that $\Log(1) = 0$. Then, we have:
+\begin{enumerate}
+  \item $\Log$ is a branch of logarithmic functions on $\Omega$
+  \item $\Log(z) = \Log(re^{i\theta}) = \log(r) + i\theta$ where $\log$ is the natural logarithmic function.
+\end{enumerate}
+\end{example}
+
+\begin{definition}
+Let $\Omega$ be simply connected and $0\notin\Omega$ and $\log_\Omega:\Omega\to\C$ be a fixed branch of the logarithmic function. We define $z^\alpha = e^{\alpha\log_\Omega z}$. Note that this definition is \emph{dependent on the branch we picked}.
+\end{definition}
+
+We let $\mathbb{H}$ be the upper half plane, $D$ be the open unit circle, $\mathbb{W}_\theta$ be the wedge of angle $\theta$ from the $x$-axis, $\mathbb{Q}_1$ be the first quadrant and $D_{k}$ be the semi unit disc that's aligned with $k\in\{u,d,r,l\}$ (up, down, right, left).
+
+Some examples of biholomorphic functions:
+
+\begin{enumerate}
+  \item The map $z\mapsto \frac{i-z}{i+z}$ and its inverse $\omega\mapsto i \left(\frac{1-\omega}{1+\omega}\right)$ maps $\mathbb{H}$ to $D$ and back, respectively.
+  \item We can translate ($z\mapsto z+c$) and rotate ($z\mapsto cz$) for $c\in \C$.
+\end{enumerate}
+
+Let $\Omega = \C\setminus[0,\infty)$ and $\log_\Omega:\Omega\to\C$ be such that
+\[\log_\Omega(re^{i\theta}) = \log r + i\theta\]
+for $0<\theta<2\pi$ and take $\alpha\in(0,2)$. Then $\mathbb{H}$ and $\mathbb{W}_{\alpha \pi}$ is biholomorphic by the maps $z\mapsto z^\alpha$ and $\omega\mapsto \omega^{1/\alpha}$.
+
+Also, $D_u$ is biholomorphic to $\mathbb{Q}_1$ through $z\mapsto \frac{1+z}{1-z}$.
+
+Further, $\mathbb{H}$ is biholomorphic to $\{z\in\C:0<\mathrm{Im} z <\pi \}$ and $D_u$ is biholomorphic to $\{z\in\C:0<\mathrm{Im} z <\pi,\ \mathrm{Re} z<0 \}$ via $\Log(z)$.
+
+The strip $\{z\in\C:\mathrm{Im} z>0,\ \mathrm{Re}z\in(-\pi/2,\pi/2)\}$ is biholomorphic to $D_r$ by the map $z\mapsto e^{iz}$.
+
+The map $z\mapsto -\frac12(z+1/z)$ is a biholomorphism between $D_u$ and $\mathbb{H}$.
+
+Since $\sin z = \frac{e^{iz}-e^{-iz}}{2i} = -\frac12(i\zeta+\frac{1}{i\zeta})$ is a biholomorphism between $\{z\in\C:\mathrm{Im} z>0,\ \mathrm{Re}z\in(-\pi/2,\pi/2)\}$ and $\mathbb{H}$.
+
+\begin{proposition}
+Let $a$ be an order $m$ pole of $f$, we then have
+\[\mathrm{Res}(f;a) = \frac{1}{(m-1)!}[(z-a)^mf(z)]^{(m-1)}.\]
+In particular, if $m=1$, we have
+\[\mathrm{Res}(f;a) = \lim_{z\to a}(z-a)f(z).\]
+\end{proposition}
+
+\begin{corollary}
+If $f=g/h$, where $g,h\in H(\Omega)$ and $g(a)\ne =0$ and $h$ has a simple zero (of order 1) at $a$, then
+\[\mathrm{Res}(f;a) = \frac{g(a)}{h'(a)}.\]
+\end{corollary}
+
+\begin{definition}
+Let $R(x,y) = \frac{P(x,y)}{Q(x,y)}$ where $P,Q$ are polynomials, then we we call
+\[\int_0^{2\pi} R(\cos t,\sin t)\ \mathrm{d}t\]
+a \emph{Type I} integral.
+\end{definition}
+
+\begin{thm}
+For Type I integrals, we have
+\[\int_0^{2\pi} R(\cos t,\sin t)\ \mathrm{d}t = 2\pi i\sum_{a\in D}\mathrm{Res}(f; a)\]
+where
+\[f(z)\coloneqq \frac{1}{iz} R\left(\frac12(z+1/z),\frac{1}{2i}(z-1/z)\right).\]
+\end{thm}
+
+\begin{definition}
+Let $R(x) = P(x)/Q(x)$ where $\mathrm{deg} Q - \mathrm{deg} P\geq 2$ and $Q(x)\ne 0$ on $\R$, then
+\[\int_{-\infty}^\infty R(x)\ \mathrm{d}x\]
+is called a \emph{Type II} integral.
+\end{definition}
+
+\begin{thm}
+For Type II Integrals, we have
+\[\int_{-\infty}^\infty R(x)\ \mathrm{d}x = 2\pi i \sum_{a\in \mathbb{H}}\mathrm{Res}(R;a)\]
+\end{thm}
+
+\begin{definition}
+Let $R(x)$ be as defined before and $\alpha> 0$, then
+\[\int_{-\infty}^\infty R(x)e^{i\alpha x}\ \mathrm{d}x\]
+is a \emph{Type III} integral.
+\end{definition}
+
+\begin{thm}
+For Type III integrals, we have
+\[\int_{-\infty}^{\infty} R(x)e^{i\alpha x} \ \mathrm{d}x =  2\pi i \sum_{a\in \mathbb{H}}\mathrm{Res}(R(x)e^{i\alpha x}; a)\]
+\end{thm}
+
+\begin{definition}
+Let $\lambda\in\R_{>0}\setminus \mathbb{Z}$ and $R(x)$ as defined above, then the integral
+\[\int_0^\infty R(x)x^{\lambda-1}\ \mathrm{d}x\]
+is called a \emph{Type IV} integral.
+\end{definition}
+
+\begin{thm}
+For Type IV integrals, we have
+\[\int_0^\infty R(x)x^{\lambda-1}\ \mathrm{d}x = \frac{\pi}{\sin(\lambda\pi)} \sum_{a\in \C_+}\mathrm{Res}(f;a)\]
+where
+\[f(z) = (-z)^{\lambda-1}R(x).\]
+\end{thm}
+
+
+\end{document}
+
+
+
+
+
